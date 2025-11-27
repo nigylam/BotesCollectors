@@ -1,10 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ResourceSpawner : MonoBehaviour
 {
-    [SerializeField] private Transform[] _spawnPoints;
+    [SerializeField] private SpawnZone[] _spawnZones;
     [SerializeField] private Resource _resourcePrefab;
 
     private float _spawnDelayMin;
@@ -13,15 +14,17 @@ public class ResourceSpawner : MonoBehaviour
     private float _waitStep = 0.1f;
 
     private WaitForSeconds _spawnWait;
+    private WaitForSeconds _startSpawnDelayWait;
 
     private void Awake()
     {
         _spawnWait = new WaitForSeconds(_waitStep);
+        _startSpawnDelayWait = new WaitForSeconds(_startSpawnDelay);
     }
 
     private void Start()
     {
-        InvokeRepeating(nameof(Spawn), _startSpawnDelay, _spawnDelayMin);
+        StartCoroutine(RepeatingSpawn());
     }
 
     public void Initialize(float spawnDelayMin, float spawnDelayMax, float startSpawnDelay)
@@ -33,15 +36,55 @@ public class ResourceSpawner : MonoBehaviour
 
     private IEnumerator RepeatingSpawn()
     {
-        Spawn();
+        yield return _startSpawnDelayWait;
 
-        float spawnDelay = Random.Range(_spawnDelayMin, _spawnDelayMax);
+        while (enabled)
+        {
+            Spawn();
 
-        yield return _spawnWait;
+            float spawnDelay = UnityEngine.Random.Range(_spawnDelayMin, _spawnDelayMax);
+            int numberIterations = Convert.ToInt32(spawnDelay / _waitStep);
+
+            for (int i = 0; i < numberIterations; i++)
+                yield return _spawnWait;
+        }
     }
 
     private void Spawn()
     {
-        Instantiate(_resourcePrefab, _spawnPoints[Random.Range(0, _spawnPoints.Length-1)].position, Quaternion.identity, transform);
+        SpawnZone spawnZone = GetSpawnZone();
+
+        if (spawnZone == null)
+            return;
+
+        Instantiate(_resourcePrefab, spawnZone.transform.position, Quaternion.identity, transform);
+    }
+
+    private SpawnZone GetSpawnZone()
+    {
+        SpawnZone spawnZone = null;
+        List<SpawnZone> spawnZones = GetFreeZones();
+
+        if (spawnZones.Count > 0)
+        {
+            int spawnZoneNumber = UnityEngine.Random.Range(0, spawnZones.Count - 1);
+            spawnZone = spawnZones[spawnZoneNumber];
+            spawnZone.Take();
+        }
+
+        return spawnZone;
+    }
+
+    private List<SpawnZone> GetFreeZones()
+    {
+        List<SpawnZone> freeZones = new();
+
+        foreach (var zone in _spawnZones)
+        {
+            if (zone.IsTaken == false)
+                freeZones.Add(zone);
+        }
+
+        return freeZones;
     }
 }
