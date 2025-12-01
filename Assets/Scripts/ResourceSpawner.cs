@@ -12,6 +12,7 @@ public class ResourceSpawner : MonoBehaviour
     private float _spawnDelayMax;
     private float _startSpawnDelay;
     private float _waitStep = 0.1f;
+    private float _spawnZonePositionOffset = 0.5f;
 
     private WaitForSeconds _spawnWait;
     private WaitForSeconds _startSpawnDelayWait;
@@ -57,7 +58,11 @@ public class ResourceSpawner : MonoBehaviour
         if (spawnZone == null)
             return;
 
-        Instantiate(_resourcePrefab, spawnZone.transform.position, Quaternion.identity, transform);
+        Vector3 spawnZonePosition = spawnZone.transform.position;
+
+        Vector3 position = new Vector3(UnityEngine.Random.Range(spawnZonePosition.x - _spawnZonePositionOffset, spawnZonePosition.x + _spawnZonePositionOffset), spawnZonePosition.y, UnityEngine.Random.Range(spawnZonePosition.z - _spawnZonePositionOffset, spawnZonePosition.z + _spawnZonePositionOffset));
+
+        Instantiate(_resourcePrefab, position, Quaternion.identity, transform);
     }
 
     private SpawnZone GetSpawnZone()

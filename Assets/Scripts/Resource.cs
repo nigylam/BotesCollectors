@@ -1,18 +1,32 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Resource : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Material _outlineMaterial;
+
+    private bool _isSelected = false;
+    private MeshRenderer _meshRenderer;
+    private Material _baseMaterial;
+
+    private void Awake()
     {
-        
+        _meshRenderer = GetComponent<MeshRenderer>();
+        _baseMaterial = _meshRenderer.material;
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Select()
     {
-        
+        if (_isSelected)
+            return;
+
+        _isSelected = true;
+        SetMaterials();
+    }
+
+    private void SetMaterials()
+    {
+        List<Material> materials = new() { _baseMaterial, _outlineMaterial};
+        _meshRenderer.SetMaterials(materials);
     }
 }
