@@ -8,14 +8,17 @@ public class Game : MonoBehaviour
     [SerializeField] private float _resourceSpawnDelayMin;
     [SerializeField] private float _resourceSpawnDelayMax;
     [SerializeField] private float _resourceStartSpawnDelay;
+    [SerializeField] private float _unitSpeed;
 
     [Header("Components links")]
     [SerializeField] private ResourceSpawner _resourceSpawner;
     [SerializeField] private Scanner _scanner;
+    [SerializeField] private Base _base;
 
     private void Awake()
     {
         _resourceSpawner.Initialize(_resourceSpawnDelayMin, _resourceSpawnDelayMax, _resourceStartSpawnDelay);
+        _base.Initialize(_unitSpeed);
     }
 
     private void Start()
@@ -26,5 +29,6 @@ public class Game : MonoBehaviour
     private void Update()
     {
         _scanner.Scan();
+        _base.UnitMoving();
     }
 }
