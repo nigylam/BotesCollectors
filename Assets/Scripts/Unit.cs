@@ -60,12 +60,12 @@ public class Unit : MonoBehaviour
             _targetResource.transform.SetParent(_resourceStorage);
             Destroy(_targetResource.gameObject);
             _moving.SetTarget(_homePosition, _state);
+            CompleteMission?.Invoke(this);
         }
         else if (_state == UnitState.GoingToHomePosition)
         {
             _targetResource = null;
             _state = UnitState.Free;
-            CompleteMission?.Invoke(this);
         }
     }
 
