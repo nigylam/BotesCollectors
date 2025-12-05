@@ -1,37 +1,79 @@
+using System;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    private bool _isFree = true;
-    private Transform _target;
+    [SerializeField] private Transform _pickPoint;
+
+    private UnitState _state;
     private float _speed;
-    private UnitAi _unitAi;
+
+    private Transform _resourceStorage;
+    private Vector3 _homePosition;
+    private UnitMoving _moving;
     private Resource _targetResource;
 
-    public bool IsFree => _isFree;
+    public event Action<Unit> CompleteMission;
+
+    public UnitState State => _state;
 
     private void Awake()
     {
-        _unitAi = GetComponent<UnitAi>();
+        _moving = GetComponent<UnitMoving>();
+        _homePosition = transform.position;
     }
 
-    public void Initialize(float speed)
+    private void OnEnable()
+    {
+        _moving.Arrived += ChangeTarget;
+    }
+
+    private void OnDisable()
+    {
+        _moving.Arrived -= ChangeTarget;
+    }
+
+    public void Initialize(float speed, Transform resourceStorage)
     {
         _speed = speed;
+        _resourceStorage = resourceStorage;
     }
 
     public void SetResource(Resource resource)
     {
-        _isFree = false;
+        _state = UnitState.GoingToResource;
         _targetResource = resource;
-        _target = resource.transform;
+        _moving.SetTarget(resource.transform.position, _state);
+    }
+
+    private void ChangeTarget()
+    {
+        if (_state == UnitState.GoingToResource)
+        {
+            _state = UnitState.GoingToBase;
+            _targetResource.Take(_pickPoint);
+            _moving.SetTarget(_resourceStorage.position, _state);
+        }
+        else if (_state == UnitState.GoingToBase)
+        {
+            _state = UnitState.GoingToHomePosition;
+            _targetResource.transform.SetParent(_resourceStorage);
+            Destroy(_targetResource.gameObject);
+            _moving.SetTarget(_homePosition, _state);
+        }
+        else if (_state == UnitState.GoingToHomePosition)
+        {
+            _targetResource = null;
+            _state = UnitState.Free;
+            CompleteMission?.Invoke(this);
+        }
     }
 
     public void Move()
     {
-        if (_isFree)
+        if (_state == UnitState.Free)
             return;
 
-        _unitAi.MoveToTarget(_target, _speed);
+        _moving.MoveToTarget(_speed);
     }
 }

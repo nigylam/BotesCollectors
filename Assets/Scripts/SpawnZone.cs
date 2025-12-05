@@ -1,14 +1,35 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SpawnZone : MonoBehaviour
 {
     private bool _isTaken = false;
+    private Resource _resource;
 
     public bool IsTaken => _isTaken;
 
-    public void Take() { _isTaken = true; }
+    private void OnEnable()
+    {
+        if (_resource != null)
+            _resource.Took += Free;
+    }
 
-    public void Free() { _isTaken = false; }
+    private void OnDisable()
+    {
+        if (_resource != null)
+            _resource.Took -= Free;
+    }
+
+    public void SetResource(Resource resource)
+    {
+        _resource = resource;
+        _isTaken = true;
+
+        _resource.Took += Free;
+    }
+
+    public void Free() 
+    {
+        _resource.Took -= Free;
+        _isTaken = false; 
+    }
 }

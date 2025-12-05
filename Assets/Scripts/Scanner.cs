@@ -69,10 +69,7 @@ public class Scanner : MonoBehaviour
         foreach (var collider in Physics.OverlapSphere(transform.position, radius))
         {
             if (collider.TryGetComponent(out Resource resource))
-            {
-                resource.Select();
                 ResourceSelected?.Invoke(resource);
-            }
         }
     }
 

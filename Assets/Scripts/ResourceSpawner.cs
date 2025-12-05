@@ -62,7 +62,7 @@ public class ResourceSpawner : MonoBehaviour
 
         Vector3 position = new Vector3(UnityEngine.Random.Range(spawnZonePosition.x - _spawnZonePositionOffset, spawnZonePosition.x + _spawnZonePositionOffset), spawnZonePosition.y, UnityEngine.Random.Range(spawnZonePosition.z - _spawnZonePositionOffset, spawnZonePosition.z + _spawnZonePositionOffset));
 
-        Instantiate(_resourcePrefab, position, Quaternion.identity, transform);
+        spawnZone.SetResource(Instantiate(_resourcePrefab, position, Quaternion.identity, transform));
     }
 
     private SpawnZone GetSpawnZone()
@@ -74,7 +74,6 @@ public class ResourceSpawner : MonoBehaviour
         {
             int spawnZoneNumber = UnityEngine.Random.Range(0, spawnZones.Count - 1);
             spawnZone = spawnZones[spawnZoneNumber];
-            spawnZone.Take();
         }
 
         return spawnZone;
