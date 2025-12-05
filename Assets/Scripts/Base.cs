@@ -12,9 +12,18 @@ public class Base : MonoBehaviour
     private Queue<Unit> _freeUnits;
     private List<Resource> _resourcesToCollect = new();
 
+    private int _resourcesCount = 0;
+
+    public event Action<int> ResourcesCountChanged;
+
     private void Awake()
     {
         _freeUnits = new Queue<Unit>(_units);
+    }
+
+    private void Start()
+    {
+        ResourcesCountChanged?.Invoke(_resourcesCount);
     }
 
     private void OnEnable()
@@ -58,6 +67,7 @@ public class Base : MonoBehaviour
 
     private void AddFreeUnit(Unit unit)
     {
+        ResourcesCountChanged?.Invoke(++_resourcesCount);
         _freeUnits.Enqueue(unit);
         CollectResource();
     }

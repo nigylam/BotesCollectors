@@ -14,6 +14,7 @@ public class Game : MonoBehaviour
     [SerializeField] private ResourceSpawner _resourceSpawner;
     [SerializeField] private Scanner _scanner;
     [SerializeField] private Base _base;
+    [SerializeField] private TextCounter _resourcesCounter;
 
     private void Awake()
     {
@@ -21,9 +22,14 @@ public class Game : MonoBehaviour
         _base.Initialize(_unitSpeed);
     }
 
-    private void Start()
+    private void OnEnable()
     {
-        
+        _base.ResourcesCountChanged += _resourcesCounter.Change;
+    }
+
+    private void OnDisable()
+    {
+        _base.ResourcesCountChanged -= _resourcesCounter.Change;
     }
 
     private void Update()
