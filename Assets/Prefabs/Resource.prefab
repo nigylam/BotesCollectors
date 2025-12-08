@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1971295688973264445}
   - component: {fileID: 243681358899549346}
   - component: {fileID: 7177575340618100670}
+  - component: {fileID: 1744776865488536568}
   m_Layer: 0
   m_Name: Resource
   m_TagString: Untagged
@@ -63,7 +64,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 5913aba9974799840a9629c03492035b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -119,3 +120,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _outlineMaterial: {fileID: 2100000, guid: 5aeae61b28aeef044beca4250cd2a28f, type: 2}
+--- !u!208 &1744776865488536568
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6290339085433215028}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.2, y: 0.2, z: 0.2}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5

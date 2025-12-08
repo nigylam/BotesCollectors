@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(UnitTraffic))]
 public class Base : MonoBehaviour
 {
     [SerializeField] private Scanner _scanner;
     [SerializeField] private List<Unit> _units;
     [SerializeField] private Transform _resourceStorage;
+    [SerializeField] private Transform _waitPoint;
+    
 
+    private UnitTraffic _unitTraffic;
     private Queue<Unit> _freeUnits;
     private List<Resource> _resourcesToCollect = new();
-
     private int _resourcesCount = 0;
 
     public event Action<int> ResourcesCountChanged;
@@ -44,8 +47,10 @@ public class Base : MonoBehaviour
 
     public void Initialize(float unitSpeed)
     {
+        _unitTraffic = GetComponent<UnitTraffic>();
+
         foreach (var unit in _units)
-            unit.Initialize(unitSpeed, _resourceStorage);
+            unit.Initialize(unitSpeed, _resourceStorage, _waitPoint, _unitTraffic);
     }
 
     public void UnitMoving()

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
+using UnityEngine.UIElements;
 
 public class ResourceSpawner : MonoBehaviour
 {
@@ -14,6 +16,10 @@ public class ResourceSpawner : MonoBehaviour
     private float _waitStep = 0.1f;
     private float _spawnZonePositionOffset = 0.5f;
 
+    private ObjectPool<Resource> _pool;
+    private int _poolCapacity = 10;
+    private int _poolMaxSize = 30;
+
     private WaitForSeconds _spawnWait;
     private WaitForSeconds _startSpawnDelayWait;
 
@@ -21,6 +27,16 @@ public class ResourceSpawner : MonoBehaviour
     {
         _spawnWait = new WaitForSeconds(_waitStep);
         _startSpawnDelayWait = new WaitForSeconds(_startSpawnDelay);
+
+        _pool = new ObjectPool<Resource>(
+            createFunc: () => Instantiate(_resourcePrefab),
+            actionOnGet: (obj) => obj.gameObject.SetActive(true),
+            actionOnRelease: (obj) => obj.gameObject.SetActive(false),
+            actionOnDestroy: (obj) => Destroy(obj.gameObject),
+            collectionCheck: true,
+            defaultCapacity: _poolCapacity,
+            maxSize: _poolMaxSize
+        );
     }
 
     private void Start()
@@ -59,10 +75,24 @@ public class ResourceSpawner : MonoBehaviour
             return;
 
         Vector3 spawnZonePosition = spawnZone.transform.position;
+        
+        Vector3 position = new(
+            UnityEngine.Random.Range(spawnZonePosition.x - _spawnZonePositionOffset, spawnZonePosition.x + _spawnZonePositionOffset), 
+            spawnZonePosition.y, 
+            UnityEngine.Random.Range(spawnZonePosition.z - _spawnZonePositionOffset, spawnZonePosition.z + _spawnZonePositionOffset)
+            );
 
-        Vector3 position = new Vector3(UnityEngine.Random.Range(spawnZonePosition.x - _spawnZonePositionOffset, spawnZonePosition.x + _spawnZonePositionOffset), spawnZonePosition.y, UnityEngine.Random.Range(spawnZonePosition.z - _spawnZonePositionOffset, spawnZonePosition.z + _spawnZonePositionOffset));
+        Resource resource = _pool.Get();
+        resource.Released += Release;
+        resource.transform.SetParent(transform);
+        resource.transform.position = position;
+        spawnZone.SetResource(resource);
+    }
 
-        spawnZone.SetResource(Instantiate(_resourcePrefab, position, Quaternion.identity, transform));
+    private void Release(Resource resource)
+    {
+        resource.Released -= Release;
+        _pool.Release(resource);
     }
 
     private SpawnZone GetSpawnZone()

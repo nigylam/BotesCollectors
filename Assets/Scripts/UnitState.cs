@@ -4,8 +4,10 @@ using UnityEngine;
 
 public enum UnitState
 {
-    GoingToResource,
-    GoingToBase,
-    GoingToHomePosition,
+    GoingOut,
+    GoingResource,
+    GoingBase,
+    GoingStorage,
+    GoingHome,
     Free
 }

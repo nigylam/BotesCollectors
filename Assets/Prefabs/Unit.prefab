@@ -97,7 +97,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c7ab70187fbd3cf45aa86ee4b379e087, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -151,7 +151,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 7842444032419719592}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.49999997
+  m_Radius: 0.5
   m_Speed: 3.5
   m_Acceleration: 16
   avoidancePriority: 50

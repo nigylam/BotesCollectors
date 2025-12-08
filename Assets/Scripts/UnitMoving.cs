@@ -6,13 +6,14 @@ using UnityEngine.AI;
 public class UnitMoving : MonoBehaviour
 {
     private float _closeDistance = 1f;
-    private float _distance;
+    private float _sqrDistance;
     private bool _isArrived = true;
     private Vector3 _target;
     private NavMeshAgent _agent;
-    private float _baseDistance = 1f;
-    private float _resourceDistance = 0.7f;
-    private float _homeDistance = 0.1f;
+
+    private float _baseCloseDistance = 1f;
+    private float _resourceCloseDistance = 0.7f;
+    private float _homeCloseDistance = 0.1f;
 
     public event Action Arrived;
 
@@ -25,14 +26,16 @@ public class UnitMoving : MonoBehaviour
     {
         switch (state)
         {
-            case UnitState.GoingToResource:
-                _closeDistance = _resourceDistance; 
+            case UnitState.GoingResource:
+                _closeDistance = _resourceCloseDistance;
                 break;
-            case UnitState.GoingToBase:
-                _closeDistance = _baseDistance;
+            case UnitState.GoingBase:
+            case UnitState.GoingStorage:
+            case UnitState.GoingHome:
+                _closeDistance = _baseCloseDistance;
                 break;
             default:
-                _closeDistance = _homeDistance; 
+                _closeDistance = _homeCloseDistance;
                 break;
         }
 
@@ -46,9 +49,10 @@ public class UnitMoving : MonoBehaviour
         if (_isArrived)
             return;
 
-        _distance = Vector3.Distance(transform.position, _target);
+        _sqrDistance = Vector3.Distance(transform.position, _target);
 
-        if( _distance < _closeDistance )
+
+        if (_sqrDistance < _closeDistance)
         {
             _agent.isStopped = true;
             _isArrived = true;
