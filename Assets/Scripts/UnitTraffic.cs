@@ -4,51 +4,62 @@ using UnityEngine;
 
 public class UnitTraffic : MonoBehaviour
 {
-    private Queue<Unit> _baseQueue = new();
-    private bool _canGo = true;
-    private float _processDelay = 3f;
+    [SerializeField] private TrafficZoneDetector _waitingZone;
+    [SerializeField] private TrafficZoneDetector _trafficZone;
 
-    private WaitForSeconds _processDelayWait;
+    private Queue<Unit> _queue = new();
+    private Unit _currentUnit;
 
-    private void Awake()
+    private void OnEnable()
     {
-        _processDelayWait = new WaitForSeconds(_processDelay);
+        _waitingZone.UnitEntered += OnUnitEnteredWaitingZone;
+        _waitingZone.UnitExited += OnUnitExitedWaitingZone;
+        _trafficZone.UnitExited += OnUnitExitedTrafficZone;
     }
 
-    public void AskPass(Unit unit)
+    private void OnDisable()
     {
-        _baseQueue.Enqueue(unit);
+        _waitingZone.UnitEntered -= OnUnitEnteredWaitingZone;
+        _waitingZone.UnitExited -= OnUnitExitedWaitingZone;
+        _trafficZone.UnitExited -= OnUnitExitedTrafficZone;
+    }
+
+    private void OnUnitEnteredWaitingZone(Unit unit)
+    {
+        if (_queue.Contains(unit))
+            return;
+
+        StopUnit(unit);
         ProcessQueue();
     }
 
-    public void AcceptPass()
+    private void OnUnitExitedWaitingZone(Unit unit)
     {
-        _canGo = true;
-        if (_baseQueue.Count > 0)
-        {
-            StartCoroutine(ProcessAfterWait());
-        }
+        if (_currentUnit == unit)
+            _currentUnit = null;
+    }
+
+    private void StopUnit(Unit unit)
+    {
+        _queue.Enqueue(unit);
+        unit.PauseMoving();
+    }
+
+    private void OnUnitExitedTrafficZone(Unit unit)
+    {
+        _currentUnit = null;
+        ProcessQueue();
     }
 
     private void ProcessQueue()
     {
-        if (_canGo == false || _baseQueue.TryDequeue(out Unit unit) == false)
+        if (_queue.Count == 0)
             return;
 
-        _canGo = false;
-        GrantEnter(unit);
+        if (_currentUnit == null)
+        {
+            _currentUnit = _queue.Dequeue();
+            _currentUnit.ContinueMoving();
+        }
     }
-
-    private void GrantEnter(Unit unit)
-    {
-        unit.GrantPass();
-    }
-
-    private IEnumerator ProcessAfterWait()
-    {
-        yield return _processDelayWait;
-
-        ProcessQueue();
-    }
-
 }

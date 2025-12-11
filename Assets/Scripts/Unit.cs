@@ -6,19 +6,18 @@ public class Unit : MonoBehaviour
 {
     [SerializeField] private Transform _pickPoint;
 
-    private UnitState _state = UnitState.Free;
     private float _speed;
 
-    private Transform _storage;
-    private Transform _waitPoint;
-    private Vector3 _homePosition;
     private Resource _targetResource;
     private UnitMoving _moving;
-    private UnitTraffic _traffic;
+    private Transform _storage;
+    private Transform _enter;
+    private Transform _exit;
+    private Vector3 _homePosition;
+    private UnitTarget _target = UnitTarget.Home;
 
-    public event Action<Unit> CompleteMission;
-
-    public UnitState State => _state;
+    public event Action TaskCompleted;
+    public event Action<Unit> Freed;
 
     private void Awake()
     {
@@ -36,12 +35,17 @@ public class Unit : MonoBehaviour
         _moving.Arrived -= ChangeTarget;
     }
 
-    public void Initialize(float speed, Transform resourceStorage, Transform waitPoint, UnitTraffic trafficLight)
+    public void Initialize(float speed, Transform resourceStorage, Transform enter, Transform exit)
     {
         _speed = speed;
         _storage = resourceStorage;
-        _waitPoint = waitPoint;
-        _traffic = trafficLight;
+        _enter = enter;
+        _exit = exit;
+    }
+
+    public void Move()
+    {
+        _moving.MoveToTarget(_speed);
     }
 
     public void SetResource(Resource resource)
@@ -50,52 +54,47 @@ public class Unit : MonoBehaviour
         ChangeTarget();
     }
 
-    public void Move()
+    public void PauseMoving()
     {
-        _moving.MoveToTarget(_speed);
+        _moving.Pause();
     }
 
-    public void GrantPass()
+    public void ContinueMoving()
     {
-        ChangeTarget();
+        _moving.Continue();
     }
 
     private void ChangeTarget()
     {
-        switch (_state)
+        switch (_target)
         {
-            case UnitState.Free:
+            case UnitTarget.Home:
                 if (_targetResource == null)
                     return;
 
-                _state = UnitState.GoingOut;
-                _traffic.AskPass(this);
+                _target = UnitTarget.Resource;
+                _moving.SetTarget(_targetResource.transform.position, _target);
                 break;
-            case UnitState.GoingOut:
-                _state = UnitState.GoingResource;
-                _traffic.AcceptPass();
-                _moving.SetTarget(_targetResource.transform.position, _state);
-                break;
-            case UnitState.GoingResource:
-                _state = UnitState.GoingBase;
+            case UnitTarget.Resource:
+                _target = UnitTarget.Enter;
                 _targetResource.Take(_pickPoint);
-                _moving.SetTarget(_waitPoint.position, _state);
+                _moving.SetTarget(_enter.position, _target);
                 break;
-            case UnitState.GoingBase:
-                _state = UnitState.GoingStorage;
-                _traffic.AskPass(this);
+            case UnitTarget.Enter:
+                _target = UnitTarget.Storage;
+                _moving.SetTarget(_storage.position, _target);
                 break;
-            case UnitState.GoingStorage:
-                _state = UnitState.GoingHome;
-                _traffic.AcceptPass();
-                _moving.SetTarget(_storage.position, _state);
-                break;
-            case UnitState.GoingHome:
-                _state = UnitState.Free;
+            case UnitTarget.Storage:
+                _target = UnitTarget.Exit;
                 _targetResource.Release();
                 _targetResource = null;
-                _moving.SetTarget(_homePosition, _state);
-                CompleteMission?.Invoke(this);
+                TaskCompleted?.Invoke();
+                _moving.SetTarget(_exit.position, _target);
+                break;
+            case UnitTarget.Exit:
+                _target = UnitTarget.Home;
+                _moving.SetTarget(_homePosition, _target);
+                Freed?.Invoke(this);
                 break;
         }
     }

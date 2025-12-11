@@ -9,10 +9,9 @@ public class Base : MonoBehaviour
     [SerializeField] private Scanner _scanner;
     [SerializeField] private List<Unit> _units;
     [SerializeField] private Transform _resourceStorage;
-    [SerializeField] private Transform _waitPoint;
-    
+    [SerializeField] private Transform _enter;
+    [SerializeField] private Transform _exit;
 
-    private UnitTraffic _unitTraffic;
     private Queue<Unit> _freeUnits;
     private List<Resource> _resourcesToCollect = new();
     private int _resourcesCount = 0;
@@ -34,7 +33,10 @@ public class Base : MonoBehaviour
         _scanner.ResourceSelected += AddResource;
 
         foreach (var unit in _units)
-            unit.CompleteMission += AddFreeUnit;
+        {
+            unit.TaskCompleted += ChangeCount;
+            unit.Freed += AddFreeUnit;
+        }
     }
 
     private void OnDisable()
@@ -42,15 +44,16 @@ public class Base : MonoBehaviour
         _scanner.ResourceSelected -= AddResource;
 
         foreach (var unit in _units)
-            unit.CompleteMission -= AddFreeUnit;
+        {
+            unit.TaskCompleted -= ChangeCount;
+            unit.Freed -= AddFreeUnit;
+        }
     }
 
     public void Initialize(float unitSpeed)
     {
-        _unitTraffic = GetComponent<UnitTraffic>();
-
         foreach (var unit in _units)
-            unit.Initialize(unitSpeed, _resourceStorage, _waitPoint, _unitTraffic);
+            unit.Initialize(unitSpeed, _resourceStorage, _enter, _exit);
     }
 
     public void UnitMoving()
@@ -70,9 +73,13 @@ public class Base : MonoBehaviour
         unit.SetResource(resource);
     }
 
-    private void AddFreeUnit(Unit unit)
+    private void ChangeCount()
     {
         ResourcesCountChanged?.Invoke(++_resourcesCount);
+    }
+
+    private void AddFreeUnit(Unit unit)
+    {
         _freeUnits.Enqueue(unit);
         CollectResource();
     }

@@ -11,9 +11,9 @@ public class UnitMoving : MonoBehaviour
     private Vector3 _target;
     private NavMeshAgent _agent;
 
-    private float _baseCloseDistance = 1f;
-    private float _resourceCloseDistance = 0.7f;
     private float _homeCloseDistance = 0.1f;
+    private float _resourceCloseDistance = 0.7f;
+    private float _storageCloseDistance = 1f;
 
     public event Action Arrived;
 
@@ -22,20 +22,20 @@ public class UnitMoving : MonoBehaviour
         _agent = GetComponent<NavMeshAgent>();
     }
 
-    public void SetTarget(Vector3 target, UnitState state)
+    public void SetTarget(Vector3 target, UnitTarget targetType)
     {
-        switch (state)
+        switch (targetType)
         {
-            case UnitState.GoingResource:
+            case UnitTarget.Home:
+                _closeDistance = _homeCloseDistance;
+                break;
+            case UnitTarget.Resource:
                 _closeDistance = _resourceCloseDistance;
                 break;
-            case UnitState.GoingBase:
-            case UnitState.GoingStorage:
-            case UnitState.GoingHome:
-                _closeDistance = _baseCloseDistance;
-                break;
-            default:
-                _closeDistance = _homeCloseDistance;
+            case UnitTarget.Storage:
+            case UnitTarget.Enter:
+            case UnitTarget.Exit:
+                _closeDistance = _storageCloseDistance;
                 break;
         }
 
@@ -49,10 +49,10 @@ public class UnitMoving : MonoBehaviour
         if (_isArrived)
             return;
 
-        _sqrDistance = Vector3.Distance(transform.position, _target);
+        _sqrDistance = Vector3.SqrMagnitude(transform.position - _target);
 
 
-        if (_sqrDistance < _closeDistance)
+        if (_sqrDistance < _closeDistance * _closeDistance)
         {
             _agent.isStopped = true;
             _isArrived = true;
@@ -63,5 +63,15 @@ public class UnitMoving : MonoBehaviour
             _agent.destination = _target;
             _agent.speed = speed;
         }
+    }
+
+    public void Pause()
+    {
+        _agent.isStopped = true;
+    }
+
+    public void Continue()
+    {
+        _agent.isStopped = false;
     }
 }
