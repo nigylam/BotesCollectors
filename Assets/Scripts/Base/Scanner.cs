@@ -10,13 +10,16 @@ public class Scanner : MonoBehaviour
     [SerializeField] private float _sphereDrawingRate = 1f;
     [SerializeField] private Button _scanButton;
 
+    private float _effectDuration;
+    private float _deltaDuration = 1f;
+
     private ParticleSystem _particleSystem;
     private ParticleSystem.MainModule _particleSystemMain;
     private ParticleSystem.SizeOverLifetimeModule _sizeOverLifetime;
 
     private float _elapsedTime = 0;
 
-    public event Action<Resource> ResourceSelected;
+    public event Action<Resource> ResourceFound;
 
     private void Awake()
     {
@@ -24,8 +27,9 @@ public class Scanner : MonoBehaviour
         _particleSystemMain = _particleSystem.main;
         _sizeOverLifetime = _particleSystem.sizeOverLifetime;
 
-        _particleSystemMain.startLifetime = _scanDuration;
-        _particleSystemMain.duration = _scanDuration;
+        _effectDuration = _scanDuration + _deltaDuration;
+        _particleSystemMain.startLifetime = _effectDuration;
+        _particleSystemMain.duration = _effectDuration;
         _particleSystemMain.startSize = _scanSize;
     }
 
@@ -41,7 +45,7 @@ public class Scanner : MonoBehaviour
 
     public void Scan()
     {
-        if (_particleSystem.IsAlive() == false)
+        if (_particleSystem.IsAlive() == false || _particleSystem.time > _scanDuration)
             return;
 
         _elapsedTime += Time.deltaTime;
@@ -59,17 +63,16 @@ public class Scanner : MonoBehaviour
             float halfSize = 0.5f;
             float radius = visualSize * halfSize;
             _elapsedTime = 0;
-            DrawSphere(radius);
+            SelectResources(radius);
         }
-
     }
 
-    private void DrawSphere(float radius)
+    private void SelectResources(float radius)
     {
         foreach (var collider in Physics.OverlapSphere(transform.position, radius))
         {
             if (collider.TryGetComponent(out Resource resource))
-                ResourceSelected?.Invoke(resource);
+                ResourceFound?.Invoke(resource);
         }
     }
 

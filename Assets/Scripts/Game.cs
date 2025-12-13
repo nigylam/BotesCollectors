@@ -31,10 +31,4 @@ public class Game : MonoBehaviour
     {
         _base.ResourcesCountChanged -= _resourcesCounter.Change;
     }
-
-    private void Update()
-    {
-        _scanner.Scan();
-        _base.UnitMoving();
-    }
 }

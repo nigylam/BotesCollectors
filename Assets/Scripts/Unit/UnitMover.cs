@@ -1,15 +1,15 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class UnitMoving : MonoBehaviour
+public class UnitMover : MonoBehaviour
 {
     private float _closeDistance = 1f;
-    private float _sqrDistance;
-    private bool _isArrived = true;
     private Vector3 _target;
     private NavMeshAgent _agent;
+    private Coroutine _moveToTarget;
 
     private float _homeCloseDistance = 0.1f;
     private float _resourceCloseDistance = 0.7f;
@@ -20,6 +20,11 @@ public class UnitMoving : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+    }
+
+    public void Initialize(float speed)
+    {
+        _agent.speed = speed;
     }
 
     public void SetTarget(Vector3 target, UnitTarget targetType)
@@ -40,29 +45,12 @@ public class UnitMoving : MonoBehaviour
         }
 
         _target = target;
-        _isArrived = false;
-        _agent.isStopped = false;
-    }
+        _agent.destination = _target;
 
-    public void MoveToTarget(float speed)
-    {
-        if (_isArrived)
-            return;
+        if (_moveToTarget != null)
+            StopCoroutine(_moveToTarget);
 
-        _sqrDistance = Vector3.SqrMagnitude(transform.position - _target);
-
-
-        if (_sqrDistance < _closeDistance * _closeDistance)
-        {
-            _agent.isStopped = true;
-            _isArrived = true;
-            Arrived?.Invoke();
-        }
-        else
-        {
-            _agent.destination = _target;
-            _agent.speed = speed;
-        }
+        _moveToTarget = StartCoroutine(MoveToTarget());
     }
 
     public void Pause()
@@ -73,5 +61,20 @@ public class UnitMoving : MonoBehaviour
     public void Continue()
     {
         _agent.isStopped = false;
+    }
+
+    private IEnumerator MoveToTarget()
+    {
+        while (IsEnoughClose() == false)
+        {
+            yield return null;
+        }
+
+        Arrived?.Invoke();
+    }
+
+    private bool IsEnoughClose()
+    {
+        return Vector3.SqrMagnitude(transform.position - _target) <= _closeDistance * _closeDistance;
     }
 }

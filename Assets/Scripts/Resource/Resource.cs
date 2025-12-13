@@ -8,15 +8,13 @@ public class Resource : MonoBehaviour
 {
     [SerializeField] private Material _outlineMaterial;
 
-    private bool _isSelected = false;
+    private bool _isOutlined = false;
     private MeshRenderer _meshRenderer;
     private Material _baseMaterial;
     private NavMeshObstacle _navmesh;
 
     public event Action Took;
     public event Action<Resource> Released;
-
-    public bool IsSelected => _isSelected;
 
     private void Awake()
     {
@@ -38,19 +36,19 @@ public class Resource : MonoBehaviour
         Took?.Invoke();
     }
 
-    public void Select()
+    public void Outline()
     {
-        if (_isSelected)
+        if (_isOutlined)
             return;
 
-        _isSelected = true;
+        _isOutlined = true;
         SetMaterials();
     }
 
     public void Release()
     {
         _meshRenderer.SetMaterials(new() { _baseMaterial });
-        _isSelected = false;
+        _isOutlined = false;
         Released?.Invoke(this);
     }
 
