@@ -28,9 +28,10 @@ public class Scanner : MonoBehaviour
         _sizeOverLifetime = _particleSystem.sizeOverLifetime;
 
         _effectDuration = _scanDuration + _deltaDuration;
-        _particleSystemMain.startLifetime = _effectDuration;
         _particleSystemMain.duration = _effectDuration;
-        _particleSystemMain.startSize = _scanSize;
+
+        ParticleSystem.MinMaxCurve startSize = _particleSystemMain.startSize;
+        startSize.constantMax = _scanSize;
     }
 
     private void OnEnable()

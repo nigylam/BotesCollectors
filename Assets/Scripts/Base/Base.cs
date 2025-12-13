@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(UnitTraffic))]
 public class Base : MonoBehaviour
 {
     [SerializeField] private List<Unit> _units;
