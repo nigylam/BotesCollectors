@@ -8,7 +8,6 @@ public class Scanner : MonoBehaviour
     [SerializeField] private float _scanSize;
     [SerializeField] private float _scanDuration;
     [SerializeField] private float _sphereDrawingRate = 1f;
-    [SerializeField] private Button _scanButton;
 
     private float _effectDuration;
     private float _deltaDuration = 1f;
@@ -16,6 +15,7 @@ public class Scanner : MonoBehaviour
     private ParticleSystem _particleSystem;
     private ParticleSystem.MainModule _particleSystemMain;
     private ParticleSystem.SizeOverLifetimeModule _sizeOverLifetime;
+    private Button _scanButton;
 
     private float _elapsedTime = 0;
 
@@ -36,12 +36,21 @@ public class Scanner : MonoBehaviour
 
     private void OnEnable()
     {
+        if (_scanButton == null)
+            return;
+
         _scanButton.onClick.AddListener(StartScan);
     }
 
     private void OnDisable()
     {
         _scanButton.onClick.RemoveListener(StartScan);
+    }
+
+    public void Initialize(Button scanButton)
+    {
+        _scanButton = scanButton;
+        _scanButton.onClick.AddListener(StartScan);
     }
 
     public void Scan()

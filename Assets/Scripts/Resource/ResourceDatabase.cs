@@ -20,7 +20,7 @@ public class ResourceDatabase : MonoBehaviour
         ResourceAdded?.Invoke();
     }
 
-    public bool TryGetResource(out Resource resource, Base requestingBase)
+    public bool TryGetResource(out Resource resource, Store requestingBase)
     {
         if(_foundResources.Count > 0)
         {

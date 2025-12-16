@@ -1,34 +1,27 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(StoreSpawner))]
 public class Game : MonoBehaviour
 {
     [Header("Parametres")]
     [SerializeField] private float _resourceSpawnDelayMin;
     [SerializeField] private float _resourceSpawnDelayMax;
     [SerializeField] private float _resourceStartSpawnDelay;
-    [SerializeField] private float _unitSpeed;
+    [SerializeField] private Vector3 _firstBaseSpawnPosition;
 
     [Header("Components links")]
     [SerializeField] private ResourceSpawner _resourceSpawner;
-    [SerializeField] private Scanner _scanner;
-    [SerializeField] private Base _base;
-    [SerializeField] private TextCounter _resourcesCounter;
+
+    private StoreSpawner _storeSpawner;
 
     private void Awake()
     {
         _resourceSpawner.Initialize(_resourceSpawnDelayMin, _resourceSpawnDelayMax, _resourceStartSpawnDelay);
-        _base.Initialize(_unitSpeed);
+        _storeSpawner = GetComponent<StoreSpawner>();
     }
 
-    private void OnEnable()
+    private void Start()
     {
-        _base.ResourcesCountChanged += _resourcesCounter.Change;
-    }
-
-    private void OnDisable()
-    {
-        _base.ResourcesCountChanged -= _resourcesCounter.Change;
+        _storeSpawner.Spawn(_firstBaseSpawnPosition);
     }
 }

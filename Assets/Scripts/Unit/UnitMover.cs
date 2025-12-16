@@ -17,13 +17,9 @@ public class UnitMover : MonoBehaviour
 
     public event Action Arrived;
 
-    private void Awake()
-    {
-        _agent = GetComponent<NavMeshAgent>();
-    }
-
     public void Initialize(float speed)
     {
+        _agent = GetComponent<NavMeshAgent>();
         _agent.speed = speed;
     }
 
@@ -38,8 +34,6 @@ public class UnitMover : MonoBehaviour
                 _closeDistance = _resourceCloseDistance;
                 break;
             case UnitTarget.Storage:
-            case UnitTarget.Enter:
-            case UnitTarget.Exit:
                 _closeDistance = _storageCloseDistance;
                 break;
         }
