@@ -5,33 +5,31 @@ using UnityEngine.UI;
 [RequireComponent(typeof(ParticleSystem))]
 public class Scanner : MonoBehaviour
 {
-    [SerializeField] private float _scanSize;
     [SerializeField] private float _scanDuration;
-    [SerializeField] private float _sphereDrawingRate = 1f;
+    [SerializeField] private float _scanFrequencyRate = 1f;
+    [SerializeField] private float _deltaDuration;
+    [SerializeField] private float _scanSize;
 
-    private float _effectDuration;
-    private float _deltaDuration = 1f;
-
+    private bool _isScanActive = false;
+    private float _scanTimer;
+    private float _elapsedTime = 0;
     private ParticleSystem _particleSystem;
-    private ParticleSystem.MainModule _particleSystemMain;
     private ParticleSystem.SizeOverLifetimeModule _sizeOverLifetime;
     private Button _scanButton;
-
-    private float _elapsedTime = 0;
 
     public event Action<Resource> ResourceFound;
 
     private void Awake()
     {
         _particleSystem = GetComponent<ParticleSystem>();
-        _particleSystemMain = _particleSystem.main;
+        ParticleSystem.MainModule particleSystemMain = _particleSystem.main;
         _sizeOverLifetime = _particleSystem.sizeOverLifetime;
-
-        _effectDuration = _scanDuration + _deltaDuration;
-        _particleSystemMain.duration = _effectDuration;
-
-        ParticleSystem.MinMaxCurve startSize = _particleSystemMain.startSize;
+        particleSystemMain.duration = _scanDuration;
+        ParticleSystem.MinMaxCurve startSize = particleSystemMain.startSize;
         startSize.constantMax = _scanSize;
+        ParticleSystem.MinMaxCurve lifetime = particleSystemMain.startLifetime;
+        lifetime.curveMultiplier = _scanDuration + _deltaDuration;
+        particleSystemMain.startLifetime = lifetime;
     }
 
     private void OnEnable()
@@ -55,15 +53,15 @@ public class Scanner : MonoBehaviour
 
     public void Scan()
     {
-        if (_particleSystem.IsAlive() == false || _particleSystem.time > _scanDuration)
+        if (_isScanActive == false)
             return;
 
+        _scanTimer += Time.deltaTime;
         _elapsedTime += Time.deltaTime;
+        float normalized = Mathf.Clamp01(_scanTimer / _scanDuration);
 
-        if (_elapsedTime >= _sphereDrawingRate)
+        if (_elapsedTime >= _scanFrequencyRate)
         {
-            float elapsed = _particleSystem.time;
-            float normalized = Mathf.Clamp01(elapsed / _scanDuration);
             float currentSize = 1f;
 
             if (_sizeOverLifetime.enabled)
@@ -75,6 +73,9 @@ public class Scanner : MonoBehaviour
             _elapsedTime = 0;
             SelectResources(radius);
         }
+
+        if (_scanTimer >= _scanDuration)
+            _isScanActive = false;
     }
 
     private void SelectResources(float radius)
@@ -88,6 +89,8 @@ public class Scanner : MonoBehaviour
 
     private void StartScan()
     {
+        _scanTimer = 0f;
+        _isScanActive = true;
         _particleSystem.Play();
     }
 }
