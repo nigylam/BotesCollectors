@@ -20,11 +20,11 @@ public class StoreSpawner : MonoBehaviour
         _resourceDatabase = GetComponent<ResourceDatabase>();
     }
 
-    public Store Spawn(Vector3 localPosition)
+    public Store Spawn(Vector3 spawnLocalPosition, int startUnitsCount)
     {
         Store store = Instantiate(_storePrefab, _parrent);
-        store.transform.localPosition = localPosition;
-        store.Initialize(_unitSpawner, _resourceDatabase, _scanButton);
+        store.transform.localPosition = spawnLocalPosition;
+        store.Initialize(startUnitsCount, _unitSpawner, _resourceDatabase, _scanButton);
         _meshSurface.BuildNavMesh();
         return store;
     }

@@ -8,6 +8,7 @@ public class Game : MonoBehaviour
     [SerializeField] private float _resourceSpawnDelayMax;
     [SerializeField] private float _resourceStartSpawnDelay;
     [SerializeField] private Vector3 _firstBaseSpawnPosition;
+    [SerializeField] private int _firstBaseStartUnitsCount;
 
     [Header("Components links")]
     [SerializeField] private ResourceSpawner _resourceSpawner;
@@ -22,6 +23,6 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
-        _storeSpawner.Spawn(_firstBaseSpawnPosition);
+        _storeSpawner.Spawn(_firstBaseSpawnPosition, _firstBaseStartUnitsCount);
     }
 }

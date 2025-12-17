@@ -2,22 +2,72 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+[RequireComponent(typeof(StoreFlagSpawner))]
 public class Store : MonoBehaviour
 {
     [SerializeField] private Transform _receptionPoint;
     [SerializeField] private Scanner _scanner;
     [SerializeField] private List<Transform> _unitPoints;
     [SerializeField] private TextCounter _resourcesCounter;
+    [SerializeField] private int _unitCreateCost;
+    [SerializeField] private int _storeCreateCost;
 
+    private StoreFlagSpawner _flagSpawner;
     private UnitSpawner _unitSpawner;
     private ResourceDatabase _resourceDatabase;
     private List<Unit> _units = new();
-    private Queue<Unit> _freeUnits;
+    private Queue<Unit> _freeUnits = new();
     private int _resourcesCount = 0;
+
+    private int ResourcesCount
+    {
+        get { return _resourcesCount; }
+        set
+        {
+            _resourcesCount = value;
+
+            if (_resourcesCount == UnitCreateCost)
+            {
+                if (TryCreateUnit())
+                    _resourcesCount = 0;
+            }
+
+            _resourcesCounter.Change(_resourcesCount);
+        }
+    }
+
+    private int UnitCreateCost
+    {
+        get { return _unitCreateCost; }
+        set
+        {
+            _unitCreateCost = value;
+
+            if (value < 1)
+                _unitCreateCost = 1;
+        }
+    }
+
+    private int StoreCreateCost
+    {
+        get { return _storeCreateCost; }
+        set
+        {
+            _storeCreateCost = value;
+
+            if (value < 1)
+                _storeCreateCost = 1;
+        }
+    }
+
+    private void Awake()
+    {
+        _flagSpawner = GetComponent<StoreFlagSpawner>();
+    }
 
     private void Start()
     {
-        _resourcesCounter.Change(_resourcesCount);
+        ResourcesCount = 0;
     }
 
     private void Update()
@@ -51,31 +101,58 @@ public class Store : MonoBehaviour
         }
     }
 
-    public void Initialize(UnitSpawner unitSpawner, ResourceDatabase resourceDatabase, Button scanButton)
+    public void Initialize(int startUnitsCount, UnitSpawner unitSpawner, ResourceDatabase resourceDatabase, Button scanButton)
     {
         _scanner.Initialize(scanButton);
         _unitSpawner = unitSpawner;
         _resourceDatabase = resourceDatabase;
-
         _scanner.ResourceFound += _resourceDatabase.AddResource;
         _resourceDatabase.ResourceAdded += CollectResource;
 
-        foreach(var unitPoint in _unitPoints)
-        {
-            Unit unit = _unitSpawner.Spawn(unitPoint, _receptionPoint);
-            _units.Add(unit);
-            unit.TaskCompleted += OnTaskCompleted;
-        }
+        if (startUnitsCount > _unitPoints.Count)
+            startUnitsCount = _unitPoints.Count;
 
-        _freeUnits = new Queue<Unit>(_units);
+        if (startUnitsCount == 0)
+            startUnitsCount = 1;
+
+        for (int i = 0; i < startUnitsCount; i++)
+        {
+            CreateUnit();
+        }
     }
 
-    public void CollectResource()
+    public void OnClick()
+    {
+        Debug.Log("clicked");
+    }
+
+    private bool TryCreateUnit()
+    {
+        if (_unitPoints.Count > 0)
+        {
+            CreateUnit();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void CreateUnit()
+    {
+        Transform spawnPoint = _unitPoints[0];
+        Unit unit = _unitSpawner.Spawn(spawnPoint, _receptionPoint);
+        _unitPoints.RemoveAt(0);
+        _units.Add(unit);
+        _freeUnits.Enqueue(unit);
+        unit.TaskCompleted += OnTaskCompleted;
+    }
+
+    private void CollectResource()
     {
         if (_freeUnits.TryDequeue(out Unit unit) == false)
             return;
 
-        if(_resourceDatabase.TryGetResource(out Resource resource, this) == false)
+        if (_resourceDatabase.TryGetResource(out Resource resource, this) == false)
         {
             _freeUnits.Enqueue(unit);
             return;
@@ -87,7 +164,7 @@ public class Store : MonoBehaviour
     private void OnTaskCompleted(Resource resource, Unit unit)
     {
         _resourceDatabase.RemoveResource(resource);
-        _resourcesCounter.Change(++_resourcesCount);
+        ResourcesCount++;
         AddFreeUnit(unit);
     }
 
