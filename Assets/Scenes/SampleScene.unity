@@ -671,6 +671,7 @@ GameObject:
   - component: {fileID: 556527387}
   - component: {fileID: 556527390}
   - component: {fileID: 556527389}
+  - component: {fileID: 556527391}
   m_Layer: 0
   m_Name: Game
   m_TagString: Untagged
@@ -748,7 +749,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17aed6fb37a5845428364114676afc62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _storePrefab: {fileID: 1267000023816818303, guid: 2b9a280b75d7d4445b0c75cf8c4c0d5c, type: 3}
+  _storePrefab: {fileID: 3597964789135848222, guid: 2b9a280b75d7d4445b0c75cf8c4c0d5c, type: 3}
   _meshSurface: {fileID: 1068949560}
   _scanButton: {fileID: 560958907}
   _parrent: {fileID: 408715420}
@@ -776,6 +777,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79e17a5fee155e24ab25ac7feff42451, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &556527391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 556527383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5423a279ca7ca440b2b26ada5578b3a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parent: {fileID: 408715420}
+  _flagPrefab: {fileID: 6795739013173560045, guid: 63b3cb5e0cee9cb4dbb01ac16ecd910e, type: 3}
 --- !u!1 &560958905
 GameObject:
   m_ObjectHideFlags: 0
@@ -1534,6 +1549,7 @@ GameObject:
   - component: {fileID: 1470983364}
   - component: {fileID: 1470983363}
   - component: {fileID: 1470983362}
+  - component: {fileID: 1470983366}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -1628,6 +1644,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 408715420}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1470983366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1470983361}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ad03c21c51e33964ebbdc9603f920bd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1476152029
 GameObject:
   m_ObjectHideFlags: 0

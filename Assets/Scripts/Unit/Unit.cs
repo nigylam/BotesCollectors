@@ -10,19 +10,17 @@ public class Unit : MonoBehaviour
     [SerializeField] private float _speed;
 
     private Resource _targetResource;
-
-    private Transform _storage;
+    private Transform _store;
     private Vector3 _homePosition;
-
+    private Vector3 _flagPosition;
     private UnitTarget _currentTarget;
-
     private Dictionary<UnitTarget, Action> _states;
 
-    public event Action<Resource, Unit> TaskCompleted;
+    public event Action<Resource, Unit> ResourceTaskCompleted;
+    public event Action<Unit> ArrivedForBuilding;
 
     private void Awake()
     {
-        _homePosition = transform.position;
         _mover.Initialize(_speed);
 
         _states = new()
@@ -30,6 +28,7 @@ public class Unit : MonoBehaviour
             { UnitTarget.Home,  OnWentHome},
             { UnitTarget.Resource,  OnWentResource},
             { UnitTarget.Storage,  OnWentStorage},
+            { UnitTarget.Flag, OnWentFlag},
         };
     }
 
@@ -43,15 +42,22 @@ public class Unit : MonoBehaviour
         _mover.Arrived -= OnArrived;
     }
 
-    public void Initialize(Transform storePoint)
+    public void Initialize(Transform storePoint, Vector3 homePosition)
     {
-        _storage = storePoint;
+        _store = storePoint;
+        _homePosition = homePosition;
     }
 
     public void SetResource(Resource resource)
     {
         _targetResource = resource;
         SetTarget(UnitTarget.Resource);
+    }
+
+    public void SetBuildingTask(Vector3 position)
+    {
+        _flagPosition = position;
+        SetTarget(UnitTarget.Flag);
     }
 
     public void PauseMoving()
@@ -77,7 +83,8 @@ public class Unit : MonoBehaviour
         {
             UnitTarget.Home => _homePosition,
             UnitTarget.Resource => _targetResource.transform.position,
-            UnitTarget.Storage => _storage.position,
+            UnitTarget.Storage => _store.position,
+            UnitTarget.Flag => _flagPosition,
             _ => transform.position
         };
 
@@ -96,6 +103,11 @@ public class Unit : MonoBehaviour
     {
         _targetResource.Release();
         SetTarget(UnitTarget.Home);
-        TaskCompleted?.Invoke(_targetResource, this);
+        ResourceTaskCompleted?.Invoke(_targetResource, this);
+    }
+
+    private void OnWentFlag()
+    {
+        ArrivedForBuilding?.Invoke(this);
     }
 }

@@ -7,7 +7,7 @@ public class UnitSpawner : MonoBehaviour
     public Unit Spawn(Transform homePoint, Transform storePoint)
     {
         Unit unit = Instantiate(_unitPrefab, homePoint);
-        unit.Initialize(storePoint);
+        unit.Initialize(storePoint, homePoint.position);
         return unit;
     }
 }

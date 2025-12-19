@@ -1,23 +1,30 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(StoreFlagSpawner))]
 public class Store : MonoBehaviour
 {
     [SerializeField] private Transform _receptionPoint;
     [SerializeField] private Scanner _scanner;
     [SerializeField] private List<Transform> _unitPoints;
     [SerializeField] private TextCounter _resourcesCounter;
+    [SerializeField] private RectTransform _buildingMark;
     [SerializeField] private int _unitCreateCost;
-    [SerializeField] private int _storeCreateCost;
+    [SerializeField] private int _storeBuildCost;
 
-    private StoreFlagSpawner _flagSpawner;
     private UnitSpawner _unitSpawner;
     private ResourceDatabase _resourceDatabase;
     private List<Unit> _units = new();
     private Queue<Unit> _freeUnits = new();
+    private Flag _buildingFlag;
     private int _resourcesCount = 0;
+    private bool _isReadyForBuilding = false;
+    private bool _isBuildPriority = false;
+
+    public event Action<Store, Unit> BuildingUnitArrived;
+
+    public Vector3 BuildLocalPosition => _buildingFlag.transform.localPosition;
 
     private int ResourcesCount
     {
@@ -26,9 +33,17 @@ public class Store : MonoBehaviour
         {
             _resourcesCount = value;
 
-            if (_resourcesCount == UnitCreateCost)
+            if (_isBuildPriority)
             {
-                if (TryCreateUnit())
+                if (_resourcesCount >= StoreBuildCost)
+                {
+                    _resourcesCount = 0;
+                    AddBuildOperation();
+                }
+            }
+            else if (_resourcesCount >= UnitCreateCost)
+            {
+                if (TryAddUnit())
                     _resourcesCount = 0;
             }
 
@@ -48,26 +63,22 @@ public class Store : MonoBehaviour
         }
     }
 
-    private int StoreCreateCost
+    private int StoreBuildCost
     {
-        get { return _storeCreateCost; }
+        get { return _storeBuildCost; }
         set
         {
-            _storeCreateCost = value;
+            _storeBuildCost = value;
 
             if (value < 1)
-                _storeCreateCost = 1;
+                _storeBuildCost = 1;
         }
-    }
-
-    private void Awake()
-    {
-        _flagSpawner = GetComponent<StoreFlagSpawner>();
     }
 
     private void Start()
     {
         ResourcesCount = 0;
+        _buildingMark.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -80,78 +91,123 @@ public class Store : MonoBehaviour
         if (_resourceDatabase != null)
         {
             _scanner.ResourceFound += _resourceDatabase.AddResource;
-            _resourceDatabase.ResourceAdded += CollectResource;
+            _resourceDatabase.ResourceAdded += SetNewTask;
         }
 
         if (_units.Count == 0)
             return;
 
         foreach (var unit in _units)
-            unit.TaskCompleted += OnTaskCompleted;
+        {
+            unit.ResourceTaskCompleted += OnResourceCollectTaskCompleted;
+            unit.ArrivedForBuilding += OnUnitArrivedBuilding;
+        }
     }
 
     private void OnDisable()
     {
         _scanner.ResourceFound -= _resourceDatabase.AddResource;
-        _resourceDatabase.ResourceAdded -= CollectResource;
+        _resourceDatabase.ResourceAdded -= SetNewTask;
 
         foreach (var unit in _units)
         {
-            unit.TaskCompleted -= OnTaskCompleted;
+            unit.ResourceTaskCompleted -= OnResourceCollectTaskCompleted;
+            unit.ArrivedForBuilding -= OnUnitArrivedBuilding;
         }
     }
 
-    public void Initialize(int startUnitsCount, UnitSpawner unitSpawner, ResourceDatabase resourceDatabase, Button scanButton)
+    public void Initialize(int startUnitsCount, UnitSpawner unitSpawner, ResourceDatabase resourceDatabase, Button scanButton, Unit startUnit = null)
     {
         _scanner.Initialize(scanButton);
         _unitSpawner = unitSpawner;
         _resourceDatabase = resourceDatabase;
         _scanner.ResourceFound += _resourceDatabase.AddResource;
-        _resourceDatabase.ResourceAdded += CollectResource;
+        _resourceDatabase.ResourceAdded += SetNewTask;
 
         if (startUnitsCount > _unitPoints.Count)
             startUnitsCount = _unitPoints.Count;
 
-        if (startUnitsCount == 0)
+        if (startUnitsCount == 0 && startUnit == null)
             startUnitsCount = 1;
 
-        for (int i = 0; i < startUnitsCount; i++)
+        if (startUnit != null)
         {
-            CreateUnit();
+            AddUnit(startUnit);
+            return;
         }
+
+        for (int i = 0; i < startUnitsCount; i++)
+            AddUnit();
     }
 
-    public void OnClick()
+    public void ActivateBuildingMark()
     {
-        Debug.Log("clicked");
+        _buildingMark.gameObject.SetActive(true);
     }
 
-    private bool TryCreateUnit()
+    public void SetFlag(Flag flag)
+    {
+        if(_buildingFlag != null)
+        {
+            Destroy(_buildingFlag.gameObject);
+        }
+
+        _buildingFlag = flag;
+        _isBuildPriority = true;
+    }
+
+    private bool TryAddUnit()
     {
         if (_unitPoints.Count > 0)
         {
-            CreateUnit();
+            AddUnit();
             return true;
         }
 
         return false;
     }
 
-    private void CreateUnit()
+    private void AddUnit()
     {
         Transform spawnPoint = _unitPoints[0];
         Unit unit = _unitSpawner.Spawn(spawnPoint, _receptionPoint);
+        RegisterUnit(unit);
+    }
+
+    private void AddUnit(Unit unit)
+    {
+        Transform spawnPoint = _unitPoints[0];
+        unit.Initialize(_receptionPoint, spawnPoint.position);
+        RegisterUnit(unit);
+    }
+
+    private void RegisterUnit(Unit unit)
+    {
         _unitPoints.RemoveAt(0);
         _units.Add(unit);
         _freeUnits.Enqueue(unit);
-        unit.TaskCompleted += OnTaskCompleted;
+        unit.ResourceTaskCompleted += OnResourceCollectTaskCompleted;
+        unit.ArrivedForBuilding += OnUnitArrivedBuilding;
     }
 
-    private void CollectResource()
+    private void AddBuildOperation()
+    {
+        _isBuildPriority = false;
+        _isReadyForBuilding = true;
+    }
+
+    private void SetNewTask()
     {
         if (_freeUnits.TryDequeue(out Unit unit) == false)
             return;
 
+        if (_isReadyForBuilding)
+        {
+            unit.SetBuildingTask(_buildingFlag.transform.position);
+            _isReadyForBuilding = false;
+            return;
+        }
+        
         if (_resourceDatabase.TryGetResource(out Resource resource, this) == false)
         {
             _freeUnits.Enqueue(unit);
@@ -161,16 +217,32 @@ public class Store : MonoBehaviour
         unit.SetResource(resource);
     }
 
-    private void OnTaskCompleted(Resource resource, Unit unit)
+    private void OnResourceCollectTaskCompleted(Resource resource, Unit unit)
     {
         _resourceDatabase.RemoveResource(resource);
         ResourcesCount++;
         AddFreeUnit(unit);
     }
 
+    private void OnUnitArrivedBuilding(Unit unit)
+    {
+        BuildingUnitArrived?.Invoke(this, unit);
+        RemoveUnit(unit);
+        Destroy(_buildingFlag.gameObject);
+        _buildingFlag = null;
+        _buildingMark.gameObject.SetActive(false);
+    }
+
     private void AddFreeUnit(Unit unit)
     {
         _freeUnits.Enqueue(unit);
-        CollectResource();
+        SetNewTask();
+    }
+
+    private void RemoveUnit(Unit unit)
+    {
+        _units.Remove(unit);
+        unit.ArrivedForBuilding -= OnUnitArrivedBuilding;
+        unit.ResourceTaskCompleted -= OnResourceCollectTaskCompleted;
     }
 }

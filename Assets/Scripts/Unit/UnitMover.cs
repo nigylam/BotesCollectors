@@ -14,6 +14,7 @@ public class UnitMover : MonoBehaviour
     private float _homeCloseDistance = 0.1f;
     private float _resourceCloseDistance = 0.7f;
     private float _storageCloseDistance = 1f;
+    private float _flagCloseDistance = 2f;
 
     public event Action Arrived;
 
@@ -35,6 +36,9 @@ public class UnitMover : MonoBehaviour
                 break;
             case UnitTarget.Storage:
                 _closeDistance = _storageCloseDistance;
+                break;            
+            case UnitTarget.Flag:
+                _closeDistance = _flagCloseDistance;
                 break;
         }
 

@@ -1,9 +1,13 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(UserInput))]
 public class ScreenClicker : MonoBehaviour
 {
     private UserInput _userInput;
+
+    public event Action<Store> StoreClicked;
+    public event Action<Vector3> PlaneClicked;
 
     private void Awake()
     {
@@ -28,7 +32,11 @@ public class ScreenClicker : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out Store store))
             {
-                store.OnClick();
+                StoreClicked?.Invoke(store);
+            }
+            else if (hit.collider.TryGetComponent(out Plane plane))
+            {
+                PlaneClicked?.Invoke(hit.point);
             }
         }
     }
