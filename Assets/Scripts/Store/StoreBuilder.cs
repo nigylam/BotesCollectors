@@ -9,7 +9,6 @@ public class StoreBuilder : MonoBehaviour
     [SerializeField] private Transform _parent;
     [SerializeField] private Flag _flagPrefab;
 
-
     private ScreenClicker _screenClicker;
     private StoreSpawner _storeSpawner;
     private bool _isPlacingFlagActive = false;
@@ -50,6 +49,9 @@ public class StoreBuilder : MonoBehaviour
 
     private void OnStoreClick(Store store)
     {
+        if(store.CanBuildNewBase == false) 
+            return;
+
         if (_isPlacingFlagActive)
             return;
 

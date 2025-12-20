@@ -261,6 +261,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scanner: {fileID: 3307345256879961432}
   _mark: {fileID: 3790196767368812774}
+  _minUnitsCountForBuilding: 2
 --- !u!65 &8870496911891575995
 BoxCollider:
   m_ObjectHideFlags: 0

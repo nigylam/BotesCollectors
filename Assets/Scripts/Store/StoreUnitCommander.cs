@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Resources;
 using UnityEngine;
 
 public class StoreUnitCommander : MonoBehaviour
@@ -12,6 +10,9 @@ public class StoreUnitCommander : MonoBehaviour
     private UnitSpawner _unitSpawner;
     private List<Unit> _units = new();
     private Queue<Unit> _freeUnits = new();
+    private Unit _unitBuilder;
+
+    public int UnitsCount => _units.Count;
 
     public event Action<Resource, Unit> TaskCompleted;
 
@@ -69,7 +70,8 @@ public class StoreUnitCommander : MonoBehaviour
 
     public void AddBuildTask(Vector3 buildPosition)
     {
-        _freeUnits.Dequeue().SetBuildingTask(buildPosition);
+        _unitBuilder = _freeUnits.Dequeue();
+        _unitBuilder.SetBuildingTask(buildPosition);
     }
 
     public void AddResourceTask(Resource resource)
@@ -78,6 +80,14 @@ public class StoreUnitCommander : MonoBehaviour
     }
 
     public bool HaveFreeUnits() => _freeUnits.Count > 0;
+
+    public void ChangeFlagPosition(Vector3 newPosition)
+    {
+        if (_unitBuilder != null) 
+        {
+            _unitBuilder.SetBuildingTask(newPosition);
+        }
+    }
 
     private void CreateUnit()
     {
@@ -103,7 +113,11 @@ public class StoreUnitCommander : MonoBehaviour
 
     private void OnTaskCompleted(Resource resource, Unit unit)
     {
+        if (resource != null)
+            _freeUnits.Enqueue(unit);
+        else
+            _unitBuilder = null;
+
         TaskCompleted?.Invoke(resource, unit);
-        _freeUnits.Enqueue(unit);
     }
 }

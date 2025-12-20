@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StoreCounter : MonoBehaviour
@@ -84,6 +82,6 @@ public class StoreCounter : MonoBehaviour
     public void IncreaseResources() => ResourcesCount++;
 
     public void SpendUnitCost() => ResourcesCount -= UnitCreateCost;
-    public void SpendStoreCost() => ResourcesCount -= StoreCreateCost;
 
+    public void SpendStoreCost() => ResourcesCount -= StoreCreateCost;
 }

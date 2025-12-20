@@ -9,6 +9,7 @@ public class Store : MonoBehaviour
 {
     [SerializeField] private Scanner _scanner;
     [SerializeField] private RectTransform _mark;
+    [SerializeField] private int _minUnitsCountForBuilding;
 
     private StoreUnitCommander _unitCommander;
     private StoreCounter _counter;
@@ -19,6 +20,8 @@ public class Store : MonoBehaviour
     public event Action<Store, Unit> BuildingUnitArrived;
 
     public Vector3 BuildLocalPosition => _flag.transform.localPosition;
+
+    public bool CanBuildNewBase => _unitCommander.UnitsCount >= _minUnitsCountForBuilding;
 
     private void Awake()
     {
@@ -76,16 +79,22 @@ public class Store : MonoBehaviour
     public void SetFlag(Flag flag)
     {
         if (_flag != null)
+        {
             Destroy(_flag.gameObject);
-
-        _flag = flag;
-        _counter.SetStoreCreatingPriority();
+            _flag = flag;
+            _unitCommander.ChangeFlagPosition(_flag.transform.position);
+        }
+        else
+        {
+            _flag = flag;
+            _counter.SetStoreCreatingPriority();
+        }
     }
 
     private void OnStoreAmountReached()
     {
-        _counter.SpendStoreCost();
         _counter.SetUnitCreatingPriority();
+        _counter.SpendStoreCost();
         _isBuildPriority = true;
         SetNewTask();
     }
@@ -127,8 +136,8 @@ public class Store : MonoBehaviour
 
         if (_isBuildPriority)
         {
-            _unitCommander.AddBuildTask(_flag.transform.position);
             _isBuildPriority = false;
+            _unitCommander.AddBuildTask(_flag.transform.position);
             return;
         }
 
