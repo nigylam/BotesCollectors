@@ -219,9 +219,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1274477699398081903}
-  - component: {fileID: 7877552267140321985}
   - component: {fileID: 3597964789135848222}
   - component: {fileID: 8870496911891575995}
+  - component: {fileID: 8805961938315554153}
+  - component: {fileID: 4368531919605000531}
   m_Layer: 0
   m_Name: Store
   m_TagString: Untagged
@@ -246,18 +247,6 @@ Transform:
   - {fileID: 771855898941560610}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7877552267140321985
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 651373247126650017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6675b2b1f8319d84f8f2a257bd5a753b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &3597964789135848222
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,19 +259,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fcd3d6d96461744fb2bf7d1e5efd2dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _receptionPoint: {fileID: 2992130984523340722}
   _scanner: {fileID: 3307345256879961432}
-  _unitPoints:
-  - {fileID: 365024216850161296}
-  - {fileID: 3257191282526561630}
-  - {fileID: 5719776877368943140}
-  - {fileID: 7113587042174613157}
-  - {fileID: 1196648487214484663}
-  - {fileID: 5747897794420094540}
-  _resourcesCounter: {fileID: 6186594992449085665}
-  _buildingMark: {fileID: 3790196767368812774}
-  _unitCreateCost: 3
-  _storeBuildCost: 1
+  _mark: {fileID: 3790196767368812774}
 --- !u!65 &8870496911891575995
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -304,6 +282,41 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.7177248, y: 1.8009777, z: 1.723978}
   m_Center: {x: -0.3588624, y: 0.40048885, z: 0.098189354}
+--- !u!114 &8805961938315554153
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 651373247126650017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b646274d5e533b43afe3be0654b41af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitCreateCost: 3
+  _storeCreateCost: 1
+  _resourcesCounter: {fileID: 6186594992449085665}
+--- !u!114 &4368531919605000531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 651373247126650017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cb8c55563c2cf84eba011318f6d6ba1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _unitPoints:
+  - {fileID: 365024216850161296}
+  - {fileID: 3257191282526561630}
+  - {fileID: 5719776877368943140}
+  - {fileID: 7113587042174613157}
+  - {fileID: 1196648487214484663}
+  - {fileID: 5747897794420094540}
+  _receptionPoint: {fileID: 2992130984523340722}
 --- !u!1 &1612158835903556815
 GameObject:
   m_ObjectHideFlags: 0
@@ -828,7 +841,7 @@ GameObject:
   - component: {fileID: 544125863171620422}
   - component: {fileID: 885904778166368756}
   m_Layer: 0
-  m_Name: Flag
+  m_Name: Mark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

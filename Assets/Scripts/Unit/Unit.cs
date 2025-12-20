@@ -16,8 +16,7 @@ public class Unit : MonoBehaviour
     private UnitTarget _currentTarget;
     private Dictionary<UnitTarget, Action> _states;
 
-    public event Action<Resource, Unit> ResourceTaskCompleted;
-    public event Action<Unit> ArrivedForBuilding;
+    public event Action<Resource, Unit> TaskCompleted;
 
     private void Awake()
     {
@@ -48,7 +47,7 @@ public class Unit : MonoBehaviour
         _homePosition = homePosition;
     }
 
-    public void SetResource(Resource resource)
+    public void SetResourceTask(Resource resource)
     {
         _targetResource = resource;
         SetTarget(UnitTarget.Resource);
@@ -103,11 +102,11 @@ public class Unit : MonoBehaviour
     {
         _targetResource.Release();
         SetTarget(UnitTarget.Home);
-        ResourceTaskCompleted?.Invoke(_targetResource, this);
+        TaskCompleted?.Invoke(_targetResource, this);
     }
 
     private void OnWentFlag()
     {
-        ArrivedForBuilding?.Invoke(this);
+        TaskCompleted?.Invoke(null, this);
     }
 }
