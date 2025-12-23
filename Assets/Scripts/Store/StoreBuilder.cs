@@ -1,12 +1,14 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent (typeof(FlagSpawner))]
+[RequireComponent(typeof(FlagSpawner))]
 [RequireComponent(typeof(StoreSpawner))]
 [RequireComponent(typeof(ScreenClicker))]
 public class StoreBuilder : MonoBehaviour
 {
     [SerializeField] private Transform _parent;
+    [SerializeField] private StorePreview _storePreview;
 
     private ScreenClicker _screenClicker;
     private StoreSpawner _storeSpawner;
@@ -14,6 +16,9 @@ public class StoreBuilder : MonoBehaviour
     private List<Store> _spawnedStores = new();
     private FlagSpawner _flagSpawner;
     private bool _isPlacingFlagActive = false;
+    private float _baseRadius;
+
+    public event Action<Vector3, float> ClearArea;
 
     private void Awake()
     {
@@ -22,13 +27,18 @@ public class StoreBuilder : MonoBehaviour
         _flagSpawner = GetComponent<FlagSpawner>();
     }
 
+    private void Start()
+    {
+        _storePreview.Disable();
+    }
+
     private void OnEnable()
     {
         _screenClicker.StoreClicked += OnStoreClick;
         _screenClicker.PlaneClicked += OnPlaneClick;
         _storeSpawner.StoreSpawned += AddNewStore;
 
-        if(_spawnedStores.Count > 0)
+        if (_spawnedStores.Count > 0)
         {
             foreach (Store store in _spawnedStores)
             {
@@ -56,7 +66,7 @@ public class StoreBuilder : MonoBehaviour
 
     private void OnStoreClick(Store store)
     {
-        if(store.CanBuildNewBase == false) 
+        if (store.CanBuildNewBase == false)
             return;
 
         if (_isPlacingFlagActive)
@@ -65,16 +75,21 @@ public class StoreBuilder : MonoBehaviour
         _isPlacingFlagActive = true;
         _chosenStore = store;
         store.ActivateBuildingMark();
+        _storePreview.Enable();
     }
 
     private void OnPlaneClick(Vector3 position)
     {
-        if(_isPlacingFlagActive == false)
+        if (_isPlacingFlagActive == false)
+            return;
+
+        if (_storePreview.IsBuildingAvailable == false) 
             return;
 
         _isPlacingFlagActive = false;
         var flag = _flagSpawner.Spawn(position, _parent);
         _chosenStore.SetFlag(flag);
+        _storePreview.Disable();
     }
 
     private void AddNewStore(Store store)
