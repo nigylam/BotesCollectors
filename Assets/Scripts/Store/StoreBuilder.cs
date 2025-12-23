@@ -1,24 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent (typeof(FlagSpawner))]
 [RequireComponent(typeof(StoreSpawner))]
 [RequireComponent(typeof(ScreenClicker))]
 public class StoreBuilder : MonoBehaviour
 {
     [SerializeField] private Transform _parent;
-    [SerializeField] private Flag _flagPrefab;
 
     private ScreenClicker _screenClicker;
     private StoreSpawner _storeSpawner;
-    private bool _isPlacingFlagActive = false;
     private Store _chosenStore;
     private List<Store> _spawnedStores = new();
+    private FlagSpawner _flagSpawner;
+    private bool _isPlacingFlagActive = false;
 
     private void Awake()
     {
         _screenClicker = GetComponent<ScreenClicker>();
         _storeSpawner = GetComponent<StoreSpawner>();
+        _flagSpawner = GetComponent<FlagSpawner>();
     }
 
     private void OnEnable()
@@ -30,7 +31,10 @@ public class StoreBuilder : MonoBehaviour
         if(_spawnedStores.Count > 0)
         {
             foreach (Store store in _spawnedStores)
+            {
                 store.BuildingUnitArrived += OnBuildingUnitArrived;
+                store.FlagReleased += ReleaseFlag;
+            }
         }
     }
 
@@ -43,7 +47,10 @@ public class StoreBuilder : MonoBehaviour
         if (_spawnedStores.Count > 0)
         {
             foreach (Store store in _spawnedStores)
+            {
                 store.BuildingUnitArrived -= OnBuildingUnitArrived;
+                store.FlagReleased -= ReleaseFlag;
+            }
         }
     }
 
@@ -66,8 +73,7 @@ public class StoreBuilder : MonoBehaviour
             return;
 
         _isPlacingFlagActive = false;
-        Vector3 flagPosition = new Vector3(position.x, _flagPrefab.transform.position.y, position.z);
-        var flag = Instantiate(_flagPrefab, flagPosition, Quaternion.identity, _parent); ;
+        var flag = _flagSpawner.Spawn(position, _parent);
         _chosenStore.SetFlag(flag);
     }
 
@@ -75,10 +81,16 @@ public class StoreBuilder : MonoBehaviour
     {
         _spawnedStores.Add(store);
         store.BuildingUnitArrived += OnBuildingUnitArrived;
+        store.FlagReleased += ReleaseFlag;
     }
 
     private void OnBuildingUnitArrived(Store store, Unit unit)
     {
         _storeSpawner.Spawn(store.BuildLocalPosition, 0, unit);
+    }
+
+    private void ReleaseFlag(Flag flag)
+    {
+        _flagSpawner.Release(flag);
     }
 }

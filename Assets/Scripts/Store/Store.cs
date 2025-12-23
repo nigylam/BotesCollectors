@@ -17,6 +17,7 @@ public class Store : MonoBehaviour, IColorable
     private bool _isBuildPriority = false;
 
     public event Action<Store, Unit> BuildingUnitArrived;
+    public event Action<Flag> FlagReleased;
 
     public Vector3 BuildLocalPosition => _flag.transform.localPosition;
 
@@ -79,7 +80,7 @@ public class Store : MonoBehaviour, IColorable
     {
         if (_flag != null)
         {
-            Destroy(_flag.gameObject);
+            FlagReleased?.Invoke(_flag);
             _flag = flag;
             _unitCommander.ChangeFlagPosition(_flag.transform.position);
         }
@@ -136,7 +137,7 @@ public class Store : MonoBehaviour, IColorable
     {
         BuildingUnitArrived?.Invoke(this, unit);
         _unitCommander.RemoveUnit(unit);
-        Destroy(_flag.gameObject);
+        FlagReleased?.Invoke(_flag);
         _flag = null;
         _mark.gameObject.SetActive(false);
     }
