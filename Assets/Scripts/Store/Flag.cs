@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Flag : MonoBehaviour
+public class Flag : MonoBehaviour, IColorable
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private MeshRenderer _flagMesh;
+    [SerializeField] private MeshRenderer _flagPoleMesh;
 
-    // Update is called once per frame
-    void Update()
+    public void ChangeColor(Color color)
     {
-        
+        _flagMesh.material.color = color;
+        _flagPoleMesh.material.color = color;
     }
 }

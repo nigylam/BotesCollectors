@@ -1,18 +1,17 @@
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(StoreCounter))]
 [RequireComponent(typeof(StoreUnitCommander))]
-public class Store : MonoBehaviour
+public class Store : MonoBehaviour, IColorable
 {
     [SerializeField] private Scanner _scanner;
     [SerializeField] private RectTransform _mark;
     [SerializeField] private int _minUnitsCountForBuilding;
+    [SerializeField] private StoreCounter _counter;
 
+    private Color _color;
     private StoreUnitCommander _unitCommander;
-    private StoreCounter _counter;
     private ResourceDatabase _resourceDatabase;
     private Flag _flag;
     private bool _isBuildPriority = false;
@@ -25,7 +24,6 @@ public class Store : MonoBehaviour
 
     private void Awake()
     {
-        _counter = GetComponent<StoreCounter>();
         _unitCommander = GetComponent<StoreUnitCommander>();
     }
 
@@ -41,9 +39,10 @@ public class Store : MonoBehaviour
 
     private void OnEnable()
     {
+        _unitCommander.TaskCompleted += OnTaskCompleted;
+
         _counter.StoreAmountReached += OnStoreAmountReached;
         _counter.UnitAmountReached += OnUnitAmountReached;
-        _unitCommander.TaskCompleted += OnTaskCompleted;
 
         if (_resourceDatabase != null)
         {
@@ -64,7 +63,7 @@ public class Store : MonoBehaviour
     public void Initialize(int startUnitsCount, UnitSpawner unitSpawner, ResourceDatabase resourceDatabase, Button scanButton, Unit startUnit = null)
     {
         _scanner.Initialize(scanButton);
-        _unitCommander.Initialize(unitSpawner, startUnitsCount, startUnit);
+        _unitCommander.Initialize(unitSpawner, startUnitsCount, startUnit, _color);
         _resourceDatabase = resourceDatabase;
 
         _scanner.ResourceFound += _resourceDatabase.AddResource;
@@ -89,6 +88,19 @@ public class Store : MonoBehaviour
             _flag = flag;
             _counter.SetStoreCreatingPriority();
         }
+
+        _flag.ChangeColor(_color);
+    }
+
+    public void ChangeColor(Color color)
+    {
+        _color = color;
+
+        if (_mark.TryGetComponent(out ImageColorChanger markColorChanger))
+            markColorChanger.ChangeColor(_color);
+
+        if (_counter.TryGetComponent(out ImageColorChanger counterColorChanger))
+            counterColorChanger.ChangeColor(_color);
     }
 
     private void OnStoreAmountReached()

@@ -224,3 +224,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca672954de9c602439932d61e564d284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _flagMesh: {fileID: 5753839997097743633}
+  _flagPoleMesh: {fileID: 5657206376261468393}

@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 [RequireComponent(typeof(UnitMover))]
-public class Unit : MonoBehaviour
+[RequireComponent (typeof(MeshRenderer))]
+public class Unit : MonoBehaviour, IColorable
 {
     [SerializeField] private Transform _pickPoint;
     [SerializeField] private UnitMover _mover;
@@ -67,6 +69,13 @@ public class Unit : MonoBehaviour
     public void ContinueMoving()
     {
         _mover.Continue();
+    }
+
+    public void ChangeColor(Color color)
+    {
+        MeshRenderer mesh = GetComponent<MeshRenderer>();
+        Material material = mesh.material;
+        material.color = color;
     }
 
     private void OnArrived()

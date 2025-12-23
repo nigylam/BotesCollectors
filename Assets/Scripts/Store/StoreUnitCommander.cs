@@ -11,6 +11,7 @@ public class StoreUnitCommander : MonoBehaviour
     private List<Unit> _units = new();
     private Queue<Unit> _freeUnits = new();
     private Unit _unitBuilder;
+    private Color _color;
 
     public int UnitsCount => _units.Count;
 
@@ -31,9 +32,10 @@ public class StoreUnitCommander : MonoBehaviour
             unit.TaskCompleted -= OnTaskCompleted;
     }
 
-    public void Initialize(UnitSpawner unitSpawner, int startUnitsCount, Unit startUnit)
+    public void Initialize(UnitSpawner unitSpawner, int startUnitsCount, Unit startUnit, Color color)
     {
         _unitSpawner = unitSpawner;
+        _color = color;
 
         if (startUnitsCount > _unitPoints.Count)
             startUnitsCount = _unitPoints.Count;
@@ -105,6 +107,7 @@ public class StoreUnitCommander : MonoBehaviour
 
     private void RegisterUnit(Unit unit)
     {
+        unit.ChangeColor(_color);
         _unitPoints.RemoveAt(0);
         _units.Add(unit);
         _freeUnits.Enqueue(unit);

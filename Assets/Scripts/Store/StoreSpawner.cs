@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,9 +12,11 @@ public class StoreSpawner : MonoBehaviour
     [SerializeField] private NavMeshSurface _meshSurface;
     [SerializeField] private Button _scanButton;
     [SerializeField] private Transform _parrent;
+    [SerializeField] private List<Color> _storeColors;
 
     private UnitSpawner _unitSpawner;
     private ResourceDatabase _resourceDatabase;
+    private int _colorIndex = 0;
 
     public event Action<Store> StoreSpawned;
 
@@ -29,9 +32,18 @@ public class StoreSpawner : MonoBehaviour
 
         Store store = Instantiate(_storePrefab, _parrent);
         store.transform.localPosition = position;
+        store.ChangeColor(ChooseColor());
         store.Initialize(startUnitsCount, _unitSpawner, _resourceDatabase, _scanButton, startUnit);
         _meshSurface.BuildNavMesh();
         StoreSpawned?.Invoke(store);
         return store;
+    }
+
+    private Color ChooseColor()
+    {
+        if(_colorIndex >= _storeColors.Count)
+            _colorIndex = 0;
+
+        return _storeColors[_colorIndex++];
     }
 }
