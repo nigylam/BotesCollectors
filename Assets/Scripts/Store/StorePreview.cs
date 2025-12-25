@@ -53,7 +53,8 @@ public class StorePreview : MonoBehaviour, IColorable
         return other.TryGetComponent<Resource>(out _)
             || other.TryGetComponent<Store>(out _)
             || other.TryGetComponent<Flag>(out _)
-            || other.TryGetComponent<Unit>(out _);
+            || other.TryGetComponent<Unit>(out _)
+            || other.TryGetComponent<Border>(out _);
     }
 
     public void ChangePosition(Vector3 position)

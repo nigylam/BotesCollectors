@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(UnitMover))]
@@ -59,6 +60,11 @@ public class Unit : MonoBehaviour, IColorable
     {
         _flagPosition = position;
         SetTarget(UnitTarget.Flag);
+    }
+
+    public void SendHome()
+    {
+        SetTarget(UnitTarget.Home);
     }
 
     public void PauseMoving()

@@ -6,14 +6,18 @@ using UnityEngine.Pool;
 
 public class ResourceSpawner : MonoBehaviour
 {
-    [SerializeField] private SpawnZone[] _spawnZones;
+    [SerializeField] private List<SpawnZone> _spawnZones;
     [SerializeField] private Resource _resourcePrefab;
+    [SerializeField] private LayerMask _blockingLayers;
 
     private float _spawnDelayMin;
     private float _spawnDelayMax;
     private float _startSpawnDelay;
     private float _waitStep = 0.1f;
     private float _spawnZonePositionOffset = 0.5f;
+    private float _resourceRadius = 1.5f;
+    private float _maxSpawnAttempts = 5;
+    private float _maxZoneAttempts = 5;
 
     private ObjectPool<Resource> _pool;
     private int _poolCapacity = 10;
@@ -50,6 +54,15 @@ public class ResourceSpawner : MonoBehaviour
         _startSpawnDelay = startSpawnDelay;
     }
 
+    public void ClearSpawnZones(Vector3 position, float radius)
+    {
+        foreach (var collider in Physics.OverlapSphere(position, radius))
+        {
+            if(collider.TryGetComponent(out SpawnZone spawnZone))
+                _spawnZones.Remove(spawnZone);
+        }
+    }
+
     private IEnumerator RepeatingSpawn()
     {
         yield return _startSpawnDelayWait;
@@ -68,24 +81,59 @@ public class ResourceSpawner : MonoBehaviour
 
     private void Spawn()
     {
-        SpawnZone spawnZone = GetSpawnZone();
+        for (int zoneAttempts = 0; zoneAttempts < _maxZoneAttempts; zoneAttempts++)
+        {
+            SpawnZone spawnZone = GetSpawnZone();
 
-        if (spawnZone == null)
-            return;
+            if (spawnZone == null)
+                return;
 
-        Vector3 spawnZonePosition = spawnZone.transform.position;
-        
-        Vector3 position = new(
-            UnityEngine.Random.Range(spawnZonePosition.x - _spawnZonePositionOffset, spawnZonePosition.x + _spawnZonePositionOffset), 
-            spawnZonePosition.y, 
-            UnityEngine.Random.Range(spawnZonePosition.z - _spawnZonePositionOffset, spawnZonePosition.z + _spawnZonePositionOffset)
-            );
+            Vector3 spawnZonePosition = spawnZone.transform.position;
 
+            for (int i = 0; i < _maxSpawnAttempts; i++)
+            {
+
+                Vector3 position = new
+                (
+                    UnityEngine.Random.Range
+                    (
+                        spawnZonePosition.x - _spawnZonePositionOffset, 
+                        spawnZonePosition.x + _spawnZonePositionOffset
+                    ),
+
+                    spawnZonePosition.y,
+
+                    UnityEngine.Random.Range
+                    (
+                        spawnZonePosition.z - _spawnZonePositionOffset, 
+                        spawnZonePosition.z + _spawnZonePositionOffset
+                    )
+                 );
+
+                if (IsSpawnAllowed(position))
+                {
+                    SpawnAt(position, spawnZone);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void SpawnAt(Vector3 position, SpawnZone spawnZone)
+    {
         Resource resource = _pool.Get();
         resource.Released += Release;
         resource.transform.SetParent(transform);
         resource.transform.position = position;
         spawnZone.SetResource(resource);
+    }
+
+    private bool IsSpawnAllowed(Vector3 position)
+    {
+        if (Physics.OverlapSphere(position, _resourceRadius, _blockingLayers).Length > 0)
+            return false;
+
+        return true;
     }
 
     private void Release(Resource resource)

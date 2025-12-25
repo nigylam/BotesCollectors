@@ -12,6 +12,7 @@ public class StoreUnitCommander : MonoBehaviour
     private Queue<Unit> _freeUnits = new();
     private Unit _unitBuilder;
     private Color _color;
+    private bool _canSendBuilderUnit = true;
 
     public int UnitsCount => _units.Count;
 
@@ -73,7 +74,9 @@ public class StoreUnitCommander : MonoBehaviour
     public void AddBuildTask(Vector3 buildPosition)
     {
         _unitBuilder = _freeUnits.Dequeue();
-        _unitBuilder.SetBuildingTask(buildPosition);
+
+        if (_canSendBuilderUnit)
+            _unitBuilder.SetBuildingTask(buildPosition);
     }
 
     public void AddResourceTask(Resource resource)
@@ -85,10 +88,21 @@ public class StoreUnitCommander : MonoBehaviour
 
     public void ChangeFlagPosition(Vector3 newPosition)
     {
-        if (_unitBuilder != null) 
+        if (_unitBuilder != null)
         {
             _unitBuilder.SetBuildingTask(newPosition);
+            _unitBuilder.ContinueMoving();
         }
+
+        _canSendBuilderUnit = true;
+    }
+
+    public void PauseUnitBuilder()
+    {
+        if (_unitBuilder != null)
+            _unitBuilder.PauseMoving();
+        else
+            _canSendBuilderUnit = false;
     }
 
     private void CreateUnit()
@@ -110,6 +124,7 @@ public class StoreUnitCommander : MonoBehaviour
         unit.ChangeColor(_color);
         _unitPoints.RemoveAt(0);
         _units.Add(unit);
+        unit.SendHome();
         _freeUnits.Enqueue(unit);
         unit.TaskCompleted += OnTaskCompleted;
     }

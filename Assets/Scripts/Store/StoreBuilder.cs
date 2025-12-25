@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,9 +15,6 @@ public class StoreBuilder : MonoBehaviour
     private List<Store> _spawnedStores = new();
     private FlagSpawner _flagSpawner;
     private bool _isPlacingFlagActive = false;
-    private float _baseRadius;
-
-    public event Action<Vector3, float> ClearArea;
 
     private void Awake()
     {
@@ -66,7 +62,7 @@ public class StoreBuilder : MonoBehaviour
 
     private void OnStoreClick(Store store)
     {
-        if (store.CanBuildNewBase == false)
+        if (store.CanBuildNewStore == false)
             return;
 
         if (_isPlacingFlagActive)
@@ -76,6 +72,9 @@ public class StoreBuilder : MonoBehaviour
         _chosenStore = store;
         store.ActivateBuildingMark();
         _storePreview.Enable();
+
+        if(store.HaveFlag)
+            store.BeforeChangeFlagPosition();
     }
 
     private void OnPlaneClick(Vector3 position)

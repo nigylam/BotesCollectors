@@ -21,7 +21,8 @@ public class Store : MonoBehaviour, IColorable
 
     public Vector3 BuildLocalPosition => _flag.transform.localPosition;
 
-    public bool CanBuildNewBase => _unitCommander.UnitsCount >= _minUnitsCountForBuilding;
+    public bool CanBuildNewStore => _unitCommander.UnitsCount >= _minUnitsCountForBuilding;
+    public bool HaveFlag => _flag != null;
 
     private void Awake()
     {
@@ -91,6 +92,11 @@ public class Store : MonoBehaviour, IColorable
         }
 
         _flag.ChangeColor(_color);
+    }
+
+    public void BeforeChangeFlagPosition()
+    {
+        _unitCommander.PauseUnitBuilder();
     }
 
     public void ChangeColor(Color color)

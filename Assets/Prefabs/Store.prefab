@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6193605440229348474}
   - component: {fileID: 7074470104767218866}
   - component: {fileID: 8475450470184156225}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -148,7 +148,7 @@ GameObject:
   - component: {fileID: 8340589283110389659}
   - component: {fileID: 1166872668833670207}
   - component: {fileID: 8436770072221493722}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ResourceCounter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ GameObject:
   - component: {fileID: 3597964789135848222}
   - component: {fileID: 8870496911891575995}
   - component: {fileID: 4368531919605000531}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Store
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -355,7 +355,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2992130984523340722}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ReceptionPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386,7 +386,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7113587042174613157}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 138289467135658793}
   - component: {fileID: 1920573149920551095}
   - component: {fileID: 8500113280413679530}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ResourceStorage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,7 +525,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5719776877368943140}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -559,7 +559,7 @@ GameObject:
   - component: {fileID: 5722414563983054053}
   - component: {fileID: 8354244449036049763}
   - component: {fileID: 5812734118269780078}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Scanner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -662,7 +662,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5747897794420094540}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -693,7 +693,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 771855898941560610}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Units
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -730,7 +730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3257191282526561630}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -764,7 +764,7 @@ GameObject:
   - component: {fileID: 3185379000618196779}
   - component: {fileID: 9198927527024052421}
   - component: {fileID: 253110741264122620}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Scanner1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -870,7 +870,7 @@ GameObject:
   - component: {fileID: 544125863171620422}
   - component: {fileID: 885904778166368756}
   - component: {fileID: 8132186448728876605}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Mark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -955,7 +955,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1196648487214484663}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -990,7 +990,7 @@ GameObject:
   - component: {fileID: 6098179724662717685}
   - component: {fileID: 8977921906073792614}
   - component: {fileID: 5509525711736286238}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: LoadZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1114,7 +1114,7 @@ GameObject:
   - component: {fileID: 5623317738917679283}
   - component: {fileID: 3690212555149843182}
   - component: {fileID: 8159776211225693543}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1191,7 +1191,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 365024216850161296}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: UnitStopPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1225,7 +1225,7 @@ GameObject:
   - component: {fileID: 8080492716843215353}
   - component: {fileID: 1812022786735108233}
   - component: {fileID: 3307345256879961432}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: ScannerEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
