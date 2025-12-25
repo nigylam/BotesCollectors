@@ -92,6 +92,7 @@ public class Store : MonoBehaviour, IColorable
         }
 
         _flag.ChangeColor(_color);
+        _mark.gameObject.SetActive(false);
     }
 
     public void BeforeChangeFlagPosition()
@@ -102,6 +103,8 @@ public class Store : MonoBehaviour, IColorable
     public void ChangeColor(Color color)
     {
         _color = color;
+
+        _scanner.ChangeColor(_color);
 
         if (_mark.TryGetComponent(out ImageColorChanger markColorChanger))
             markColorChanger.ChangeColor(_color);

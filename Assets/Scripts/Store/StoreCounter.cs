@@ -39,6 +39,9 @@ public class StoreCounter : MonoBehaviour
                 UnitAmountReached?.Invoke();
             }
 
+            if (_resourcesCount < 0)
+                _resourcesCount = 0;
+
             _resourcesCounter.Change(_resourcesCount);
         }
     }

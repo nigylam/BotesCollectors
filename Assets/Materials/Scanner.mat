@@ -29,7 +29,7 @@ Material:
     m_Floats:
     - _BUILTIN_AlphaClip: 0
     - _BUILTIN_Blend: 0
-    - _BUILTIN_CullMode: 1
+    - _BUILTIN_CullMode: 0
     - _BUILTIN_DstBlend: 10
     - _BUILTIN_QueueControl: 0
     - _BUILTIN_QueueOffset: 0
@@ -40,7 +40,7 @@ Material:
     - _BUILTIN_ZWriteControl: 0
     - _IntersectionDepth: 0.83
     m_Colors:
-    - _IntersectionColor: {r: 0, g: 12.52291, b: 9.67818, a: 1}
+    - _IntersectionColor: {r: 29.800634, g: 29.800634, b: 29.800634, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &2132355795197403593
 MonoBehaviour:

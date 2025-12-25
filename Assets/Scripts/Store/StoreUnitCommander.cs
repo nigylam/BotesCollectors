@@ -10,6 +10,7 @@ public class StoreUnitCommander : MonoBehaviour
     private UnitSpawner _unitSpawner;
     private List<Unit> _units = new();
     private Queue<Unit> _freeUnits = new();
+    private List<Transform> _takenUnitPoints = new();
     private Unit _unitBuilder;
     private Color _color;
     private bool _canSendBuilderUnit = true;
@@ -57,6 +58,8 @@ public class StoreUnitCommander : MonoBehaviour
     public void RemoveUnit(Unit unit)
     {
         _units.Remove(unit);
+        _unitPoints.Add(_takenUnitPoints[0]);
+        _takenUnitPoints.RemoveAt(0);
         unit.TaskCompleted -= OnTaskCompleted;
     }
 
@@ -122,6 +125,7 @@ public class StoreUnitCommander : MonoBehaviour
     private void RegisterUnit(Unit unit)
     {
         unit.ChangeColor(_color);
+        _takenUnitPoints.Add(_unitPoints[0]);
         _unitPoints.RemoveAt(0);
         _units.Add(unit);
         unit.SendHome();

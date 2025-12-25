@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(ParticleSystem))]
-public class Scanner : MonoBehaviour
+public class Scanner : MonoBehaviour, IColorable
 {
     [SerializeField] private float _scanDuration;
     [SerializeField] private float _scanFrequencyRate = 1f;
@@ -76,6 +77,12 @@ public class Scanner : MonoBehaviour
 
         if (_scanTimer >= _scanDuration)
             _isScanActive = false;
+    }
+
+    public void ChangeColor(Color color)
+    {
+        ParticleSystem.MainModule main = _particleSystem.main;
+        main.startColor = color;
     }
 
     private void SelectResources(float radius)

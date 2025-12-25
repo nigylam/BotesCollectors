@@ -15,6 +15,8 @@ public class UnitMover : MonoBehaviour
     private float _resourceCloseDistance = 0.7f;
     private float _storageCloseDistance = 1f;
     private float _flagCloseDistance = 2f;
+    private int _defaultPriority = 50;
+    private int _lowPriority = 100;
 
     public event Action Arrived;
 
@@ -22,6 +24,7 @@ public class UnitMover : MonoBehaviour
     {
         _agent = GetComponent<NavMeshAgent>();
         _agent.speed = speed;
+        _agent.avoidancePriority = _defaultPriority;
     }
 
     public void SetTarget(Vector3 target, UnitTarget targetType)
@@ -30,15 +33,19 @@ public class UnitMover : MonoBehaviour
         {
             case UnitTarget.Home:
                 _closeDistance = _homeCloseDistance;
+                _agent.avoidancePriority = _defaultPriority;
                 break;
             case UnitTarget.Resource:
                 _closeDistance = _resourceCloseDistance;
+                _agent.avoidancePriority = _lowPriority;
                 break;
             case UnitTarget.Storage:
                 _closeDistance = _storageCloseDistance;
+                _agent.avoidancePriority = _defaultPriority;
                 break;            
             case UnitTarget.Flag:
                 _closeDistance = _flagCloseDistance;
+                _agent.avoidancePriority = _lowPriority;
                 break;
         }
 
