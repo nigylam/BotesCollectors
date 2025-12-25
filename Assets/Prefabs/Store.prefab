@@ -148,6 +148,7 @@ GameObject:
   - component: {fileID: 8340589283110389659}
   - component: {fileID: 1166872668833670207}
   - component: {fileID: 8436770072221493722}
+  - component: {fileID: 1556266817321885026}
   m_Layer: 3
   m_Name: ResourceCounter
   m_TagString: Untagged
@@ -165,7 +166,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.108}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6193605440229348474}
   m_Father: {fileID: 5623317738917679283}
@@ -253,6 +254,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e20037595c1d6ab4196cc5005e9d85ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1556266817321885026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 381704942788530724}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d614e0dc8d0f464419bc2048825178a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 0
+    height: 0
 --- !u!1 &651373247126650017
 GameObject:
   m_ObjectHideFlags: 0
