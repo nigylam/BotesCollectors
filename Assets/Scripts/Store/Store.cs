@@ -115,8 +115,8 @@ public class Store : MonoBehaviour, IColorable
 
     private void OnStoreAmountReached()
     {
-        _counter.SetUnitCreatingPriority();
         _counter.SpendStoreCost();
+        _counter.SetUnitCreatingPriority();
         _isBuildPriority = true;
         SetNewTask();
     }

@@ -228,7 +228,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _unitCreateCost: 3
-  _storeCreateCost: 1
+  _storeCreateCost: 5
   _resourcesCounter: {fileID: 1166872668833670207}
 --- !u!114 &1166872668833670207
 MonoBehaviour:
