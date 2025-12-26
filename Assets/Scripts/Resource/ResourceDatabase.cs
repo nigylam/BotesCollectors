@@ -4,63 +4,85 @@ using UnityEngine;
 
 public class ResourceDatabase : MonoBehaviour
 {
-    private List<Resource> _foundResources = new();
+    private Dictionary<Resource, Store> _foundResources = new();
     private List<Resource> _selectedResources = new();
+
+    private List<Store> _stores = new();
 
     public event Action ResourceAdded;
 
+    public void AddStore(Store store)
+    {
+        _stores.Add(store);
+
+        if (_foundResources.Count > 0)
+            RedistributeResources();
+    }
+
     public void AddResource(Resource resource)
     {
-        if (_foundResources.Contains(resource) || _selectedResources.Contains(resource))
+        if (_foundResources.ContainsKey(resource) || _selectedResources.Contains(resource))
             return;
 
-        _foundResources.Add(resource);
+        _foundResources.Add(resource, GetNearestStore(resource));
         resource.Outline();
 
         ResourceAdded?.Invoke();
     }
 
-    public bool TryGetResource(out Resource resource, Store requestingBase)
+    public bool TryGetResource(out Resource resource, Store requestingStore)
     {
-        if(_foundResources.Count > 0)
-        {
-            resource = GetNearestResource(requestingBase.transform);
-
-            if (resource != null)
-                return true;
-
-            return false;
-        }
-
         resource = null;
-        return false;
-    }
 
-    public Resource GetNearestResource(Transform point)
-    {
         if (_foundResources.Count == 0)
-            return null;
+            return false;
 
-        Resource nearestResource = _foundResources[0];
-
-        foreach (Resource resource in _foundResources)
+        foreach (Resource resourceKey in _foundResources.Keys)
         {
-            if (nearestResource == resource) 
-                continue;
-
-            if (Vector3.SqrMagnitude(resource.transform.position - point.position) < Vector3.SqrMagnitude(nearestResource.transform.position - point.position))
-                nearestResource = resource;
+            if (_foundResources[resourceKey] == requestingStore)
+            {
+                resource = resourceKey;
+                _foundResources.Remove(resource);
+                _selectedResources.Add(resource);
+                return true;
+            }
         }
 
-        _foundResources.Remove(nearestResource);
-        _selectedResources.Add(nearestResource);
-
-        return nearestResource;
+        return false;
     }
 
     public void RemoveResource(Resource resource)
     {
-        if(_selectedResources.Contains(resource))
+        if (_selectedResources.Contains(resource))
             _selectedResources.Remove(resource);
+    }
+
+    private void RedistributeResources()
+    {
+        List<Resource> resources = new();
+        resources.AddRange(_foundResources.Keys);
+        _foundResources.Clear();
+
+        foreach (var resource in resources)
+            _foundResources.Add(resource, GetNearestStore(resource));
+    }
+
+    private Store GetNearestStore(Resource resource)
+    {
+        float minDistance = float.MaxValue;
+        var nearestStore = _stores[0];
+
+        foreach (var store in _stores)
+        {
+            float sqrDistance = Vector3.SqrMagnitude(resource.transform.position - store.transform.position);
+
+            if (sqrDistance < minDistance)
+            {
+                minDistance = sqrDistance;
+                nearestStore = store;
+            }
+        }
+
+        return nearestStore;
     }
 }

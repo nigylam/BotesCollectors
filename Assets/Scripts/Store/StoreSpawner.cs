@@ -34,6 +34,7 @@ public class StoreSpawner : MonoBehaviour
         store.transform.localPosition = position;
         store.ChangeColor(ChooseColor());
         store.Initialize(startUnitsCount, _unitSpawner, _resourceDatabase, _scanButton, startUnit);
+        _resourceDatabase.AddStore(store);
         _meshSurface.BuildNavMesh();
         StoreSpawned?.Invoke(store);
         return store;

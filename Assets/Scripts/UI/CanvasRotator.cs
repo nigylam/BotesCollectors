@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CanvasRotator : MonoBehaviour
 {
-    private void Update()
+    private void Start()
     {
         transform.LookAt(Camera.main.transform.position);
     }
