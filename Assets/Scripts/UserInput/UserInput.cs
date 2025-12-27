@@ -4,9 +4,9 @@ using UnityEngine.EventSystems;
 
 public class UserInput : MonoBehaviour
 {
-    public Vector3 MousePosition => Input.mousePosition;
-
     public event Action<Vector3> MouseClicked;
+
+    public Vector3 MousePosition => Input.mousePosition;
 
     private void Update()
     {

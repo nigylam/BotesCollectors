@@ -15,11 +15,6 @@ public class StoreCounter : MonoBehaviour
 
     public bool IsEnoughForStore() => ResourcesCount >= StoreCreateCost;
 
-    private void Start()
-    {
-        ResourcesCount = 0;
-    }
-
     private int ResourcesCount
     {
         get { return _resourcesCount; }
@@ -68,6 +63,11 @@ public class StoreCounter : MonoBehaviour
             if (value < 1)
                 _storeCreateCost = 1;
         }
+    }
+
+    private void Start()
+    {
+        ResourcesCount = 0;
     }
 
     public void SetStoreCreatingPriority()
